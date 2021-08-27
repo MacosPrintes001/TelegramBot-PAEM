@@ -5,8 +5,8 @@ from logging import ERROR, error
 import requests
 import telebot
 from telebot.apihelper import send_message
-import dados_bot
-import conexao_bot as conect
+from util_for_bot import dados_bot
+from util_for_bot import conexao_bot as conect
 
 token = dados_bot.btoken
 

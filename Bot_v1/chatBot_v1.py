@@ -6,11 +6,12 @@ from telebot.apihelper import send_message
 
 from telebot.util import is_string
 
-from dados_bot import btoken
-import conexao_bot as con_Bot
+from util_for_bot import conexao_bot as con_Bot
+from util_for_bot import dados_bot
 
 
-token = btoken
+
+token = dados_bot.btoken
 bot = telebot.TeleBot(token)
 
 
@@ -122,9 +123,9 @@ def search_token(message):
 
                         bot.register_next_step_handler(matricula, ask_campus)
 
-                elif resp == "erro":
-                    resp_user = bot.send_message(chat_id, "Houve um erro de conexão, tente enviar o CPF novamente, caso o erro persista entre em contato conosco")
-                    bot.register_next_step_handler(resp_user, search_token)
+                #elif #resp == "erro":
+                    #resp_user = bot.send_message(chat_id, "Houve um erro de conexão, tente enviar o CPF novamente, caso o erro persista entre em contato conosco")
+                    #bot.register_next_step_handler(resp_user, search_token)
                 else:
                     resp_user = bot.send_message(chat_id, "Olha, eu não achei essa pessoa no banco de dados, verifique se você digitou certo "
                                                             f"e tente de novo ou então, caso você não tenha uma conta basta acessar o link e criar uma antes de poder prosseguir {link}")
