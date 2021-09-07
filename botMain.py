@@ -45,13 +45,26 @@ def menu(message):
 
 def encaminhaBot(message):
     chat_id = message.chat.id
+
     opc = int(message.text)
     if opc == 1:
         bot.send_message(chat_id, "OK, basta você falar com meu amigo @ufopa_agendamento para realiazar seu agendamento")
     else:
         bot.send_message(chat_id, "Esta função ainda não foi implementada, escolha outra")
+
+    try:
+        opc = int(opc)
+        if opc == 1:
+            bot.send_message(chat_id, "OK, basta você falar com meu amigo @UfopaAgendamentoBot para agendar um horario")        
+
+        else:
+            bot.send_message(chat_id, "Esta função ainda não foi implementada, escolha outra")
+            menu(message)
+    except Exception:
+        bot.send_message(chat_id, "Por favor selecione o NÚMERO da opção desejada")
         menu(message)
 
+    
 
 @bot.message_handler(func=lambda m : True )
 def indef(message):

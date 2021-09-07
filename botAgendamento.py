@@ -1,4 +1,7 @@
+<<<<<<< Updated upstream
 from botMain import registrado
+=======
+>>>>>>> Stashed changes
 import dados_bot
 import telebot
 
