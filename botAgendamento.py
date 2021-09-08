@@ -1,6 +1,6 @@
 import re
 from typing import Annotated
-
+from time import sleep
 from telebot.types import VoiceChatEnded
 import dados_bot
 import telebot
@@ -26,7 +26,7 @@ def registrado(message):
         chat_id = message.chat.id
         resp = int(message.text)
         if resp == 1:
-            CPF_Matricula(message) #começa atendimento
+            pedeCPF(message) #começa atendimento
         elif resp == 2:
             bot.send_message(chat_id, "Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")
         else:
@@ -40,16 +40,17 @@ def registrado(message):
         bot.register_next_step_handler(r, registrado)
 
 
-def CPF_Matricula(message):
+def pedeCPF(message):
     try:
         chat_id = message.chat.id
         protocolo = str(message.from_user.id + random.random()).replace(".", "") #criei protocolo com o idUsuario do telegram e um numero aletorio
-
+        
         #enviar protocolo pro banco
+        cnt.backupDados("NULL", protocolo)
 
-        bot.send_message(chat_id, "Certo, pra começar vou precisar do seu CPF e da sua matricula. Envie seu CPF seguido da sua matricula, segue abaixo um exemplo")
-        r = bot.send_message(chat_id, "030.511.030-72 2019002845")
+        r = bot.send_message(chat_id, "Certo, pra começar vou precisar do seu CPF. ENVIE APENAS OS NÚMEROS")
         bot.register_next_step_handler(r, fazLogin)
+
     except:
         pass
 
@@ -57,41 +58,66 @@ def CPF_Matricula(message):
 def fazLogin(message):
     try:
         chat_id = message.chat.id
-        cpf, matricula = str(message.text).split(" ")
+        msg = str(message.text)
 
-        cpf = str(cpf)
-        matricula = str(matricula)
+        cpf = f'{msg[:3]}.{msg[3:6]}.{msg[6:9]}-{msg[9:]}'
+        print(cpf) 
 
         bot.send_message(chat_id, "Ok, só um segundo enquanto eu tento fazer seu login")
         
-        print("fui atras da pessoa")
-        resp, errorCode = cnt.login(cpf, matricula)
+        #indo no banco pegar os dados
+        resp, errorCode = cnt.login(cpf)
 
         if resp:
-            print("Login feito")
-            bot.send_message(chat_id, "Tudo certo, login efetuado")
+
+            m = bot.send_message(chat_id, f"Tudo certo, login efetuado, agora vou precisar da sua matricula")
+            bot.register_next_step_handler(m, buscaDados)
+
         else:
-            print("deu ruim")
-            if errorCode == 00:
-                print("Erro no servidor")
+            if errorCode == 0:
                 m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie seu cpf depois sua matricula")
                 bot.register_next_step_handler(m, fazLogin)
 
             elif errorCode == 1:
-                print("Dados não encontrados")
-                bot.send_message(chat_id, "Eu não achei esses dados no servidor, caso não tenha uma conta ainda basta falar com meu amigo @UFOPA_BOT e criar uma conta.")
+                bot.send_message(chat_id, "Eu não achei esse cpf no servidor, caso não tenha uma conta ainda basta falar com meu amigo @UFOPA_BOT e criar uma conta.")
                 msg = bot.send_message(chat_id, "Caso você já possua uma conta, revise seus dados e mande novamente")
                 bot.register_next_step_handler(msg, fazLogin)
             else:
-                print("Erro desconhecido")
                 msg = bot.send_message(chat_id, "Houve um erro desconhecido. Tente novamente")
                 bot.register_next_step_handler(msg, fazLogin)
 
     except Exception:
-        bot.send_message(chat_id, "Olha, acho que você mandou algum dado errado. Tente novamente, e lembre-se dar UM espaço entre o CPF  e Matrícula")
-        r = bot.send_message(chat_id, "030.511.030-72 2019002845")
+        bot.send_message(chat_id, "Olha, parece que você digitou algo de errado. Tente novamente, e lembre-se são apenas os NÚMEROS  do cpf")
+        r = bot.send_message(chat_id, "Exemplo: 03051103072")
         bot.register_next_step_handler(r, fazLogin)
 
+
+
+def buscaDados(message):
+
+    matricula = str(message.text)
+    chat_id = message.chat.id
+
+    resp, errorCode = cnt.dadosUsuario(matricula)
+    if resp:
+
+            m = bot.send_message(chat_id, f"Tudo certo, login efetuado, agora vou precisar da sua matricula")
+            bot.register_next_step_handler(m, buscaDados)
+
+    else:
+        if errorCode == 3:
+            m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie seu cpf depois sua matricula")
+            bot.register_next_step_handler(m, fazLogin)
+
+        elif errorCode == 2:
+            bot.send_message(chat_id, "Eu não achei esses dados no servidor, caso não tenha uma conta ainda basta falar com meu amigo @UFOPA_BOT e criar uma conta.")
+            msg = bot.send_message(chat_id, "Caso você já possua uma conta, revise seus dados e mande novamente")
+            bot.register_next_step_handler(msg, fazLogin)
+        else:
+            msg = bot.send_message(chat_id, "Houve um erro desconhecido. Tente novamente")
+            bot.register_next_step_handler(msg, fazLogin)
+
+    
 
 @bot.message_handler(func=lambda m : True )
 def indef(message):

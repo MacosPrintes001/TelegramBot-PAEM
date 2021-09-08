@@ -64,7 +64,7 @@ def encaminhaBot(message):
         bot.send_message(chat_id, "Por favor selecione o NÚMERO da opção desejada")
         menu(message)
 
-    
+
 
 @bot.message_handler(func=lambda m : True )
 def indef(message):
