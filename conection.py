@@ -56,19 +56,17 @@ def dadosUsuario(matricula):
         payload = {"Authorization": bearer_token}
         resp_discente = requests.get(url=f"{rota_base}/discentes", headers=payload)
         lista = resp_discente.json()
-
-        print(lista)
         
         for i in lista:
             if matricula in i.values():
                 nome = str(i['nome'])
                 id_discente = str(i['id'])
 
-                sleep(2)
+                '''sleep(2)
                 protocolo = getProtocol()
                 backupDados(protocolo, nome)
                 backupDados(protocolo, id_discente)
-                backupDados(matricula)
+                backupDados(matricula)'''
 
                 return True, ''
                 '''resp, campus , id_recurso = data_campus(id_discente=id_discente)

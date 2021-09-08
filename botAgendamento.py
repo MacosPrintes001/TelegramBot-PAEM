@@ -96,26 +96,19 @@ def fazLogin(message):
 def buscaDados(message):
 
     matricula = str(message.text)
+    print(matricula)
     chat_id = message.chat.id
 
     resp, errorCode = cnt.dadosUsuario(matricula)
     if resp:
 
-            m = bot.send_message(chat_id, f"Tudo certo, login efetuado, agora vou precisar da sua matricula")
+            m = bot.send_message(chat_id, f"Matricula Valida")
             bot.register_next_step_handler(m, buscaDados)
 
     else:
         if errorCode == 3:
-            m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie seu cpf depois sua matricula")
-            bot.register_next_step_handler(m, fazLogin)
-
-        elif errorCode == 2:
-            bot.send_message(chat_id, "Eu não achei esses dados no servidor, caso não tenha uma conta ainda basta falar com meu amigo @UFOPA_BOT e criar uma conta.")
-            msg = bot.send_message(chat_id, "Caso você já possua uma conta, revise seus dados e mande novamente")
-            bot.register_next_step_handler(msg, fazLogin)
-        else:
-            msg = bot.send_message(chat_id, "Houve um erro desconhecido. Tente novamente")
-            bot.register_next_step_handler(msg, fazLogin)
+            m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie sua matricula")
+            bot.register_next_step_handler(m, buscaDados)
 
     
 
