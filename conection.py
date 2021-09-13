@@ -1,10 +1,6 @@
-import re
 from time import sleep
 import requests
 import json
-from requests.api import get
-from requests.auth import HTTPBasicAuth
-from telebot.util import per_thread
 
 token = ' '
 rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
@@ -14,7 +10,9 @@ rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.c
     conexão no cpf == 0
     cpf não encontrado == 1
     matricula não encontrada == 2
-    conexão matricula == 3'''
+    conexão matricula == 3
+    id não encontrado == 4
+    id invalido == 5'''
 
 
 def login(cpf):
@@ -59,36 +57,105 @@ def dadosUsuario(matricula):
         
         for i in lista:
             if matricula in i.values():
-                nome = str(i['nome'])
+                nome_discente = str(i['nome'])
                 id_discente = str(i['id'])
+                matricula_discente = str(i['matricula'])
+                
+                resp_discente = requests.get(url=f"{rota_base}/discentes/discente?id_discente={id_discente}", headers=payload)
+                campus_id_discente = json.loads(resp_discente.content).get('campus_id_campus')
 
-                '''sleep(2)
+                resp_campus_recursos = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
+                lista_recurso = resp_campus_recursos.json()
+                
                 protocolo = getProtocol()
-                backupDados(protocolo, nome)
+                backupDados(protocolo, nome_discente)
                 backupDados(protocolo, id_discente)
-                backupDados(matricula)'''
+                backupDados(protocolo, matricula_discente)
+                backupDados(protocolo, campus_id_discente)
+                backupDados(protocolo, lista_recurso)
 
-                return True, ''
-                '''resp, campus , id_recurso = data_campus(id_discente=id_discente)
-                if resp:
-                    return True'''
+                return True, '', lista_recurso
         
-        return False, 2
+        return False, 2, ''
 
     except Exception:
-        return False, 3
+        return False, 3, ''
 
+
+
+def verific_id(id):
+    try:
+        bearer_token = f"Bearer {token}"
+        payload = {"Authorization": bearer_token}
+        resp_campus = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
+        recursos = resp_campus.json()
+
+        for i in recursos:
+            compare = int(i['id'])
+            if id == compare:
+                return True, '', ''
+        
+
+        menu = criaMenu(recursos)
+        return False, 4, menu
+    
+    except Exception:
+        meni = criaMenu(recursos)
+        return False, 5, meni
+
+
+def criaMenu(recurso):
+    msg = "Selecinone o Numero da opção\n"
+    for i in recurso:
+        msg = f"{msg}\n{str(i['id'])} - {str(i['nome'])}"
+    
+    return msg
+            
+
+def getHora(idRecUser):
+    try:
+        bearer_token = f"Bearer {token}"
+        payload = {"Authorization": bearer_token}
+        resp_campus = requests.get(url=f"{rota_base}/recursos_campus/recurso_campus?id_recurso_campus={idRecUser}", headers=payload)
+        recurso = resp_campus.json()
+
+        print(recurso)
+
+        horaIni = recurso['inicio_horario_funcionamento']
+        horaFim = recurso['fim_horario_funcionamento']
+
+        ini = int(horaIni[0:2])
+        fim = int(horaFim[0:2])
+
+        menuHour = ""
+        pont = 1
+        mark = 1
+        ant = ini
+
+        while ant < fim:
+            if mark != 3:
+                menuHour = f"{menuHour}\n {pont} - {ant}:00 as {ant+2}:00"
+                pont+=1
+            ant+=2
+            mark+=1
+
+        mark = mark - 1       
+
+        return menuHour, pont
+
+    except Exception:
+        return '', ''
 
 
 def backupDados(protocolo_usuario, dadoParaSalvar):
     if dadoParaSalvar == "NULL" or protocolo_usuario == "NULL":
         #primeira mensagem
-        print("protocolo enviado ao banco")
+        pass
 
 def getProtocol():
     #ir no banco e voltar com o protocolo
     pass
 
-def getDados(protocolo):
+def getDados(protocolo, dadosParaRecuperar):
     #pegar algum dado
     pass
