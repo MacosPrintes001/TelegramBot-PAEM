@@ -40,7 +40,7 @@ for i in l:
 
 
 
-horaIni = "08:00:00"
+'''horaIni = "08:00:00"
 horaFim = "18:00:00"
 
 ini = int(horaIni[0:2])
@@ -57,4 +57,54 @@ while ant < fim:
     mark+=1
 
 print(menuHour)
-print(mark - 1)
+print(mark - 1)'''
+
+'''horaUser = '18:00 as 22:00'
+
+
+horaios = {'08:00 as 10:00','10:00 as 12:00', '14:00 as 16:00', 
+            '16:00 as 18:00', '18:00 as 20:00', '20:00 as 22:00'}
+
+
+if horaUser in horaios:
+    print("Valido")
+else:
+    print("Invalido")'''
+
+
+
+
+from datetime import date, datetime, timedelta
+import datetime
+
+def isDate(data_user):
+    try:
+        data_ = str(data_user).split("/")
+
+        dia = int(data_[0])
+        mes = int(data_[1])
+        ano = int(data_[2])
+
+        newDate = datetime.date(ano, mes, dia)
+
+        data_limite = date.today() + timedelta(days=2)
+
+        if newDate >= date.today():
+            if newDate <= data_limite:
+
+                print("Valido") #é uma data, é menor que dois dias
+
+            else:
+                print("Acima") #é uma data, é maior que dois dias
+
+        else:
+
+            print("Abaixo") #data anterior a hoje
+        
+    except Exception:
+        print("Deu merda") #não é uma data
+
+
+d = "24/12/2000"
+
+isDate(d)

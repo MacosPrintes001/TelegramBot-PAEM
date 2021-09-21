@@ -2,6 +2,7 @@ from time import sleep
 import requests
 import json
 
+
 token = ' '
 rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
 
@@ -21,7 +22,6 @@ def login(cpf):
         headers = {"Authentication": f"CPF {cpf}"}
         response = requests.post(url=f"{rota_base}/auth.bot", headers=headers)
         res = str(response)[10:15]
-
         if res == '[200]':
             token = json.loads(response.content).get('token')
             
@@ -34,6 +34,7 @@ def login(cpf):
                     sleep(3)
                     id_usuario = str(i['id'])
                     protocolo = getProtocol()
+                    
                     backupDados(protocolo, id_usuario)
                     backupDados(protocolo, cpf)
                    
@@ -95,7 +96,6 @@ def verific_id(id):
             if id == compare:
                 return True, '', ''
         
-
         menu = criaMenu(recursos)
         return False, 4, menu
     
@@ -112,14 +112,12 @@ def criaMenu(recurso):
     return msg
             
 
-def getHora(idRecUser):
+def getHora(idRecUser, id_chat):
     try:
         bearer_token = f"Bearer {token}"
         payload = {"Authorization": bearer_token}
         resp_campus = requests.get(url=f"{rota_base}/recursos_campus/recurso_campus?id_recurso_campus={idRecUser}", headers=payload)
         recurso = resp_campus.json()
-
-        print(recurso)
 
         horaIni = recurso['inicio_horario_funcionamento']
         horaFim = recurso['fim_horario_funcionamento']
@@ -128,23 +126,22 @@ def getHora(idRecUser):
         fim = int(horaFim[0:2])
 
         menuHour = ""
-        pont = 1
-        mark = 1
         ant = ini
+        dot = 0
 
         while ant < fim:
-            if mark != 3:
-                menuHour = f"{menuHour}\n {pont} - {ant}:00 as {ant+2}:00"
-                pont+=1
-            ant+=2
-            mark+=1
+            if dot == 2:
+                ant+=2
 
-        mark = mark - 1       
+            else:
+                menuHour = f"{menuHour}\n{ant}:00 as {ant+2}:00"
+                ant+=2
+            dot+=1
 
-        return menuHour, pont
+        return menuHour, id_chat, idRecUser
 
     except Exception:
-        return '', ''
+        pass
 
 
 def backupDados(protocolo_usuario, dadoParaSalvar):
@@ -152,9 +149,19 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
         #primeira mensagem
         pass
 
+
+def makeReservation():
+    para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso= getAlldata()
+
+    
+
 def getProtocol():
     #ir no banco e voltar com o protocolo
     pass
+
+def getAlldata():
+    pass #função para recuperar todos os dados do usuario
+
 
 def getDados(protocolo, dadosParaRecuperar):
     #pegar algum dado
