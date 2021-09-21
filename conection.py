@@ -153,11 +153,43 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
 def makeReservation():
     para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso= getAlldata()
 
+    lista = {"para_si": 1,
+            "data": "30/09/2021",
+            "hora_inicio": "08:00:00",
+            "hora_fim": "10:00:00",
+            "status_acesso": 1,
+            "nome": "MARCOS VINICIUS DE CASTRO PRINTES",
+            "fone": "(93) 992386660",
+            "cpf": "030.511072-12",
+            "usuario_id_usuario": "12",
+            "discente_id_discente": "12",
+            "recurso_campus_id_recurso_campus": "06"}
+
+
+    headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+    url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/"
+    resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(lista),headers=headers)
     
+    res = str(resp)[10:15]
+    
+    if res == "[201]":
+        return "OK"
+
+    elif res == "[500]":
+        return "NOT"#aluno já reservou este local
+
+    elif res == "[400]":
+        return 'NOT' #erro no servidor
+
+    elif res == "[405]":
+        return 'NOT' #erro no metodo
+
+
 
 def getProtocol():
     #ir no banco e voltar com o protocolo
     pass
+
 
 def getAlldata():
     pass #função para recuperar todos os dados do usuario

@@ -231,7 +231,13 @@ def respPhone(message):
         cnt.backupDados(protocol, resp) #Numero de telefone
 
         bot.send_message(chat_id, "Ok, só um segundo enquanto eu faço sua reserva")
-        cnt.makeReservation()
+        resp = cnt.makeReservation()
+
+        if resp == 'OK':
+            bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso, seu protocolo é {protocol}")
+
+        else:
+            bot.send_message(chat_id, f"Reserva malsucedida, seu protocolo é {protocol}")
 
     else:
         r = bot.send_message(chat_id, "Certo, digite seu telefone novamente.")
