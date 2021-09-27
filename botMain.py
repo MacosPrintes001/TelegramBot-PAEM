@@ -10,8 +10,7 @@ def start(message):
     chat_id = message.chat.id
     nome = f"{message.from_user.first_name}"
 
-    bot.send_message(chat_id, f"Olá {nome} sejá bem vindo ao sistema virtual da UFOPA. Para acessar as proximas etapas você precisa estar cadastrado(a) no sistema \
-                                me diga, você já esta cadastrado(a)?")
+    bot.send_message(chat_id, f"Olá {nome} sejá bem vindo ao sistema virtual da UFOPA. Para acessar as proximas etapas você precisa estar cadastrado(a) no sistema me diga, você já esta cadastrado(a)?")
     r = bot.send_message(chat_id, "1 - Sim\n2 - Não")
     bot.register_next_step_handler(r, registrado)
 #função registrar usuario

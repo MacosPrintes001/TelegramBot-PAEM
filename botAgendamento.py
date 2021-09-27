@@ -206,8 +206,7 @@ def forYou(message):
         para_si = -1
         protocol = cnt.getProtocol()
         cnt.backupDados(protocol, para_si)
-        r = bot.send_message(chat_id, "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, \
-                                     então vou precisar qeu você mande ele pra mim")
+        r = bot.send_message(chat_id, "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, então vou precisar qeu você mande ele pra mim")
         bot.register_next_step_handler(r, PhoneNumber)
 
     else:
@@ -231,13 +230,14 @@ def respPhone(message):
         cnt.backupDados(protocol, resp) #Numero de telefone
 
         bot.send_message(chat_id, "Ok, só um segundo enquanto eu faço sua reserva")
-        resp = cnt.makeReservation()
+        bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso, seu protocolo é {protocol}")
+
+        '''resp = cnt.makeReservation()
 
         if resp == 'OK':
-            bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso, seu protocolo é {protocol}")
 
         else:
-            bot.send_message(chat_id, f"Reserva malsucedida, seu protocolo é {protocol}")
+            bot.send_message(chat_id, f"Reserva malsucedida, seu protocolo é {protocol}")'''
 
     else:
         r = bot.send_message(chat_id, "Certo, digite seu telefone novamente.")

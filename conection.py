@@ -31,7 +31,7 @@ def login(cpf):
             lista = res.json()
             for i in lista:
                 if cpf in i.values():
-                    sleep(3)
+
                     id_usuario = str(i['id'])
                     protocolo = getProtocol()
                     
