@@ -61,10 +61,9 @@ def dadosUsuario(matricula):
                 nome_discente = str(i['nome'])
                 id_discente = str(i['id'])
                 matricula_discente = str(i['matricula'])
-                
                 resp_discente = requests.get(url=f"{rota_base}/discentes/discente?id_discente={id_discente}", headers=payload)
-                campus_id_discente = json.loads(resp_discente.content).get('campus_id_campus')
 
+                campus_id_discente = json.loads(resp_discente.content).get('campus_id_campus')
                 resp_campus_recursos = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
                 lista_recurso = resp_campus_recursos.json()
                 
@@ -151,7 +150,7 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
 
 
 def makeReservation():
-    para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso= getAlldata()
+    #para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso = getAlldata()
 
     lista = {"para_si": 1,
             "data": "30/09/2021",
@@ -161,7 +160,7 @@ def makeReservation():
             "nome": "MARCOS VINICIUS DE CASTRO PRINTES",
             "fone": "(93) 992386660",
             "cpf": "030.511072-12",
-            "usuario_id_usuario": "12",
+            "usuario_id_usuario": 12,
             "discente_id_discente": "12",
             "recurso_campus_id_recurso_campus": "06"}
 

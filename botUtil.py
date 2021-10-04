@@ -20,6 +20,13 @@ def isTime(time): #Se preciar de tempo maior é só dividir horaIni e horaFim e 
         return False
 
 
+def makeMenu(recursos_campus):
+    msg = "Selecinone o Numero da opção\n"
+    for i in recursos_campus:
+        msg = f"{msg}\n{str(i['id'])} - {str(i['nome'])}"
+        return msg
+
+
 def isDate(data_user):
     try:
         data_ = str(data_user).split("/")

@@ -74,7 +74,7 @@ else:
 
 
 
-from datetime import date, datetime, timedelta
+"""from datetime import date, datetime, timedelta
 import datetime
 
 def isDate(data_user):
@@ -107,4 +107,21 @@ def isDate(data_user):
 
 d = "24/12/2000"
 
-isDate(d)
+isDate(d)"""
+
+
+
+for e in range(3):
+    pas = open("teste.txt", "a")
+    i = input("Digite um nome:")
+    pas.write(f"Nome: {i}\t")
+    p = input("Digite sua idade: ")
+    pas.write(f"Idade: {p}\n")
+    pas.close()
+
+
+lines = []
+with open("teste.txt") as f:
+    lines = f.readlines()
+print(lines)
+count = 0

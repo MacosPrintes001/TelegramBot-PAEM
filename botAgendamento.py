@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Container
 from telebot import handler_backends
 from telebot.types import Update
@@ -11,36 +12,66 @@ token = dados_bot.agendamentoBotToken
 
 bot = telebot.TeleBot(token)
 
+arc = ""
+tagUser = "USER: "
+tagBot = "\t BOT: "
+
+
 @bot.message_handler(commands=['start'])
-def start(message):
+def start(message):  
+
     chat_id = message.chat.id
+    text = str(message.text)
     r = bot.send_message(chat_id, "Olá, bem-vindo(a) ao sistema de agendamento da UFOPA. Você já possui cadastro no sistema?\n1 - Sim\n2 - Não")
+    
+    """
+    user = str(message.from_user.id)
+    arc = open(user+".txt", "w")
+    arc.write(f"{tagUser} {text}\n")
+    arc.write(f"{tagBot} {str(r.text)}\n")"""
+    
     bot.register_next_step_handler(r, registrado)
+
 
 def registrado(message):
     try:
+        
+        """t = str(message.text)
+        user = str(message.from_user.id)
+        arc = open(user+".txt", "a")
+        arc.write(f"{tagUser} {t}\n")"""
+
         chat_id = message.chat.id
         resp = int(message.text)
+
         if resp == 1:
             requestCPF(message) #começa atendimento
+
         elif resp == 2:
+
+            arc.write(f"{tagUser} 2\n")
+            arc.write(f"{tagBot} Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")
+
             bot.send_message(chat_id, "Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")
+            
         else:
             r = bot.send_message(chat_id, "Não entendi o que você disse. Você já possui cadastro?\n1 - Sim\n2 - Não")
             bot.register_next_step_handler(r, registrado)   
 
-    except Exception:
+    except  Exception:
         r = bot.send_message(message.chat.id, "Responda com NÚMERO da sua opção.\n1 - Sim\n2 - Não")
         bot.register_next_step_handler(r, registrado)
 
 
 def requestCPF(message):
     try:
+        user = str(message.from_user.id)
         chat_id = message.chat.id
         protocol = str(message.from_user.id + random.random()).replace(".", "") #criei protocolo com o idUsuario do telegram e um numero aletorio
         #enviar protocolo pro banco
         #cnt.backupDados("NULL", protocolo)
         r = bot.send_message(chat_id, "Certo, pra começar vou precisar do seu CPF.\nENVIE APENAS OS NÚMEROS")
+
         bot.register_next_step_handler(r, doLogin)
 
     except:
@@ -54,7 +85,7 @@ def doLogin(message):
 
         cpf = f'{msg[:3]}.{msg[3:6]}.{msg[6:9]}-{msg[9:]}'
         
-        print(cpf) 
+        #print(cpf) 
 
         bot.send_message(chat_id, "Ok, só um segundo enquanto eu tento fazer seu login")
         
@@ -94,15 +125,16 @@ def searchUserData(message):
 
     resp, errorCode, recursos_campus = cnt.dadosUsuario(matricula)
     if resp:
+        
+        menu = botUtil.makeMenu(recursos_campus)
 
-            msg = "Selecinone o Numero da opção\n"
-            for i in recursos_campus:
-                msg = f"{msg}\n{str(i['id'])} - {str(i['nome'])}"
-            
-            bot.send_message(chat_id, f"Matricula Valida. Qual recurso vecê gostaria de reservar?")
-            
-            m = bot.send_message(chat_id, f"{msg}")
-            bot.register_next_step_handler(m, requestHour)
+        
+        
+        bot.send_message(chat_id, f"Matricula Valida. Qual recurso vecê gostaria de reservar?")
+        
+        m = bot.send_message(chat_id, f"{menu}")
+
+        bot.register_next_step_handler(m, requestHour)
 
     else:
         if errorCode == 3:
@@ -117,6 +149,7 @@ def searchUserData(message):
 
 
 def requestHour(message):
+    
     chat_id = message.chat.id
     id_recurso = int(message.text)
     resp, errorCode, menu = cnt.verific_id(id_recurso)
@@ -128,7 +161,7 @@ def requestHour(message):
 
         menuHour, id_chat, id_recursoUser = cnt.getHora(id_recurso, chat_id)
         
-        bot.send_message(id_chat, f"Ecolha um destes horaios abaixo.\n{menuHour}")
+        bot.send_message(id_chat, f"Escolha um destes horaios abaixo.\n{menuHour}")
         r = bot.send_message(chat_id, "É para mandar um texto com o horario.\nex: 08:00 as 10:00")
         bot.register_next_step_handler(r, procHour)
         
@@ -148,6 +181,9 @@ def procHour(message):
     chat_id = message.chat.id
     msg = str(message.text)
     resp = botUtil.isTime(msg)
+
+    id_rec = bot.get_updates()[-1].message.text
+    print(id_rec)
 
     if resp:
         protocol = cnt.getProtocol()
@@ -238,7 +274,6 @@ def respPhone(message):
 
         else:
             bot.send_message(chat_id, f"Reserva malsucedida, seu protocolo é {protocol}")'''
-
     else:
         r = bot.send_message(chat_id, "Certo, digite seu telefone novamente.")
         bot.register_next_step_handler(r, PhoneNumber)
