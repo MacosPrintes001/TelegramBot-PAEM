@@ -15,7 +15,7 @@ rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.c
     id não encontrado == 4
     id invalido == 5'''
 
-
+pao = "NOVA"
 def login(cpf):
     global token
     try:

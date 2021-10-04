@@ -111,7 +111,7 @@ isDate(d)"""
 
 
 
-for e in range(3):
+"""for e in range(3):
     pas = open("teste.txt", "a")
     i = input("Digite um nome:")
     pas.write(f"Nome: {i}\t")
@@ -124,4 +124,47 @@ lines = []
 with open("teste.txt") as f:
     lines = f.readlines()
 print(lines)
-count = 0
+count = 0"""
+
+
+
+
+dados_aluno = {"para_si": int(aluno.para_si),
+                            "data": aluno.data,
+                            "hora_inicio": f"{aluno.hora_inicio}:00",
+                            "hora_fim": f"{aluno.hora_fim}:00",
+                            "status_acesso": 1,
+                            "nome": aluno.nome,
+                            "fone": aluno.telefone,
+                            "cpf": aluno.cpf,
+                            "usuario_id_usuario": int(aluno.id_usuario),
+                            "discente_id_discente": int(aluno.id_discente),
+                            "recurso_campus_id_recurso_campus": aluno.id_recurso}
+            agendar(dados_aluno, token, chat_id)
+        
+    except Exception:
+        pass
+      
+
+def agendar(lista, token, chat_id):
+    
+    headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+    url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/"
+    resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(lista),headers=headers)
+    
+    res = str(resp)[10:15]
+
+    print(res)
+    
+    if res == "[201]":
+        print(lista)
+        bot.send_message(chat_id, f"Certo, a reserva de {aluno.nome} foi feita com sucesso")
+
+    elif res == "[500]":
+        bot.send_message(chat_id, "Esse discente já reservou essa sala, ou o horario solicitado não está disponivel para atendimento")
+    
+    elif res == "[400]":
+        bot.send_message(chat_id, "ERRO NO SERVIDOR")
+
+    elif res == "[405]":
+        bot.send_message(chat_id, "ERRO NO METODO")
