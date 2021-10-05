@@ -2,6 +2,8 @@ from time import sleep
 import requests
 import json
 
+from botMain import menu
+
 
 token = ' '
 rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
@@ -55,6 +57,7 @@ def login(cpf, user):
 
 def dadosUsuario(matricula, user):
     global token
+    dados = dict()
     try:
         bearer_token = f"Bearer {token}"
         payload = {"Authorization": bearer_token}
@@ -72,6 +75,12 @@ def dadosUsuario(matricula, user):
                 resp_campus_recursos = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
                 lista_recurso = resp_campus_recursos.json()
 
+                cont = 1
+                for i in lista_recurso:
+                    menu_recuso = ""
+                    dados[cont] = f"{cont} - {str(i['nome'])} {int(i['id'])}"
+                    menu_recuso = menu_recuso + f"{cont} - {str(i['nome'])}"
+                    cont+=1
 
                 arc = open(user+".txt", "a")
                 arc.write(f"NOME: {nome_discente}\n")
@@ -79,14 +88,8 @@ def dadosUsuario(matricula, user):
                 arc.write(f"MATRICULA: {matricula_discente}\n")
                 arc.close()
                 
-                protocolo = getProtocol()
-                backupDados(protocolo, nome_discente)
-                backupDados(protocolo, id_discente)
-                backupDados(protocolo, matricula_discente)
-                backupDados(protocolo, campus_id_discente)
-                backupDados(protocolo, lista_recurso)
 
-                return True, '', lista_recurso
+                return True, dados, menu_recuso
         
         return False, 2, ''
 
@@ -123,7 +126,7 @@ def criaMenu(recurso):
     return msg
             
 
-def getHora(idRecUser, id_chat):
+def getHora(idRecUser):
     try:
         hora=dict()
         bearer_token = f"Bearer {token}"
@@ -148,6 +151,11 @@ def getHora(idRecUser, id_chat):
                 ant+=2
                 cont-=1
 
+            elif dot == 1:
+                menuHour = f"{menuHour}\n{cont} - 0{ant}:00 as {ant+2}:00"
+                #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
+                hora[cont]=f"{ant}:00 as {ant+2}:00"
+
             else:
                 menuHour = f"{menuHour}\n{cont} - {ant}:00 as {ant+2}:00"
                 #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
@@ -168,14 +176,15 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
 
 def makeReservation(user):
     #para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso = getAlldata()
+
     arc = open(user+".txt", "r")
     linhas = arc.readlines()
-    for linha in linhas:
-        print(linha)
-    
+    out_file  = open(user+".json", "w")
+    json.dump(linhas, out_file)
+    arc.close()
+    out_file.close()
 
-
-    headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+    """headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
     url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/"
     resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(lista),headers=headers)
     
@@ -191,8 +200,7 @@ def makeReservation(user):
         return 'NOT' #erro no servidor
 
     elif res == "[405]":
-        return 'NOT' #erro no metodo
-
+        return 'NOT' #erro no metodo"""
 
 
 def getProtocol():

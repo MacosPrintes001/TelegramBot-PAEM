@@ -129,7 +129,7 @@ count = 0"""
 
 
 
-"""dados_aluno = {"para_si": int(aluno.para_si),
+"""dados_aluno = {          "para_si": int(aluno.para_si),
                             "data": aluno.data,
                             "hora_inicio": f"{aluno.hora_inicio}:00",
                             "hora_fim": f"{aluno.hora_fim}:00",
@@ -140,6 +140,7 @@ count = 0"""
                             "usuario_id_usuario": int(aluno.id_usuario),
                             "discente_id_discente": int(aluno.id_discente),
                             "recurso_campus_id_recurso_campus": aluno.id_recurso}
+
             agendar(dados_aluno, token, chat_id)
         
     except Exception:

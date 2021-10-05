@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Container
-from telebot import handler_backends
 from telebot.types import Update
 import dados_bot
 import telebot
@@ -13,34 +12,17 @@ token = dados_bot.agendamentoBotToken
 bot = telebot.TeleBot(token)
 
 arc = ""
-tagUser = "USER: "
-tagBot = "\t BOT: "
-
 
 @bot.message_handler(commands=['start'])
-def start(message):  
-
+def start(message):
     chat_id = message.chat.id
-    text = str(message.text)
-    r = bot.send_message(chat_id, "Olá, bem-vindo(a) ao sistema de agendamento da UFOPA. Você já possui cadastro no sistema?\n1 - Sim\n2 - Não")
-    
-    """
-    user = str(message.from_user.id)
-    arc = open(user+".txt", "w")
-    arc.write(f"{tagUser} {text}\n")
-    arc.write(f"{tagBot} {str(r.text)}\n")"""
-    
+    r = bot.send_message(chat_id, "Olá, bem-vindo(a) ao sistema de agendamento da UFOPA. Você já possui cadastro no sistema?\n1 - Sim\n2 - Não")    
     bot.register_next_step_handler(r, registrado)
+
 
 
 def registrado(message):
     try:
-        
-        """t = str(message.text)
-        user = str(message.from_user.id)
-        arc = open(user+".txt", "a")
-        arc.write(f"{tagUser} {t}\n")"""
-
         chat_id = message.chat.id
         resp = int(message.text)
 
@@ -48,9 +30,6 @@ def registrado(message):
             requestCPF(message) #começa atendimento
 
         elif resp == 2:
-
-            """arc.write(f"{tagUser} 2\n")
-            arc.write(f"{tagBot} Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")"""
 
             bot.send_message(chat_id, "Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")
             
@@ -65,13 +44,8 @@ def registrado(message):
 
 def requestCPF(message):
     try:
-        user = str(message.from_user.id)
         chat_id = message.chat.id
-        #protocol = str(message.from_user.id + random.random()).replace(".", "") #criei protocolo com o idUsuario do telegram e um numero aletorio
-        #enviar protocolo pro banco
-        #cnt.backupDados("NULL", protocolo)
         r = bot.send_message(chat_id, "Certo, pra começar vou precisar do seu CPF.\nENVIE APENAS OS NÚMEROS")
-
         bot.register_next_step_handler(r, doLogin)
 
     except:
@@ -86,8 +60,6 @@ def doLogin(message):
 
         cpf = f'{msg[:3]}.{msg[3:6]}.{msg[6:9]}-{msg[9:]}'
         
-        #print(cpf) 
-
         bot.send_message(chat_id, "Ok, só um segundo enquanto eu tento fazer seu login")
         
         #indo no banco pegar os dados
@@ -119,33 +91,36 @@ def doLogin(message):
 
 
 def searchUserData(message):
+    try:
 
-    matricula = str(message.text)
-    print(matricula)
-    chat_id = message.chat.id
-    user = str(message.from_user.id)
+        matricula = str(message.text)
+        print(matricula)
+        chat_id = message.chat.id
+        user = str(message.from_user.id)
 
-    resp, errorCode, recursos_campus = cnt.dadosUsuario(matricula, user)
-    if resp:
+        resp, info, recursos_campus = cnt.dadosUsuario(matricula, user)
+        if resp:
+            
+            #menu = botUtil.makeMenu(recursos_campus)
+            
+            bot.send_message(chat_id, f"Matricula Valida. Qual recurso vecê gostaria de reservar?")
+            m = bot.send_message(chat_id, f"{recursos_campus}")
+            bot.register_next_step_handler(m, requestHour)
+
+        else:
+            if info == 3:
+                m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie sua matricula")
+                bot.register_next_step_handler(m, searchUserData)
+
+            elif info == 2:
+                m = bot.send_message(chat_id, "Não achei essa matricula. Tente novamente")
+                bot.register_next_step_handler(m, searchUserData)
+    except Exception:
+        pass
+  
         
-        menu = botUtil.makeMenu(recursos_campus)
-        
-        bot.send_message(chat_id, f"Matricula Valida. Qual recurso vecê gostaria de reservar?")
-        m = bot.send_message(chat_id, f"{menu}")
-        bot.register_next_step_handler(m, requestHour)
-
-    else:
-        if errorCode == 3:
-            m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie sua matricula")
-            bot.register_next_step_handler(m, searchUserData)
-
-        elif errorCode == 2:
-            m = bot.send_message(chat_id, "Não achei essa matricula. Tente novamente")
-            bot.register_next_step_handler(m, searchUserData)
-    
 #VARIAVEL GLOBAL
 horario=''
-
 def requestHour(message):
     global horario
     chat_id = message.chat.id
@@ -159,7 +134,7 @@ def requestHour(message):
         arc.write(f"ID_RECURSO: {id_recurso}\n")
         arc.close()
         
-        menuHour, hora = cnt.getHora(id_recurso, chat_id)
+        menuHour, hora = cnt.getHora(id_recurso)
 
         #ATRIBUI À VARIAVEL GLOBAL O DICIONARIO COM AS HORAS
         horario=hora
@@ -260,7 +235,6 @@ def forYou(message):
         r = bot.send_message(chat_id, "Não entendi, essa reserva é para você?\n1 - Sim\n2 - Não")
         bot.register_next_step_handler(r, forYou)
 
-
 def PhoneNumber(message):
     user = str(message.from_user.id)
     phone = str(message.text)
@@ -268,8 +242,6 @@ def PhoneNumber(message):
     arc.write(f"TELEFONE: {phone}\n")
     arc.close()
     callReservation(message)
-
-    
 
 
 def callReservation(message):
@@ -279,8 +251,6 @@ def callReservation(message):
     #pegar dados e fazer reserva
     user = str(message.from_user.id)
     cnt.makeReservation(user)
-
-
     
     n = randint()
     print(n)
@@ -290,13 +260,23 @@ def callReservation(message):
     bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso, seu protocolo é {protocolo}")
 
 
-    #DELETAR ARQUIVO TXT
+    #DELETAR ARQUIVOS TXT
+
+
+
+
+
+
 
 
 @bot.message_handler(func=lambda m : True )
 def indef(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Desculpe, não entendi o que disse, por favor clique em /start para iniciar o atendimento")
+
+
+
+
 
 try:
     bot.polling(none_stop=True, interval=5, timeout=20)
