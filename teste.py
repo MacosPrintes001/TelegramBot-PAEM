@@ -129,7 +129,7 @@ count = 0"""
 
 
 
-dados_aluno = {"para_si": int(aluno.para_si),
+"""dados_aluno = {"para_si": int(aluno.para_si),
                             "data": aluno.data,
                             "hora_inicio": f"{aluno.hora_inicio}:00",
                             "hora_fim": f"{aluno.hora_fim}:00",
@@ -167,4 +167,7 @@ def agendar(lista, token, chat_id):
         bot.send_message(chat_id, "ERRO NO SERVIDOR")
 
     elif res == "[405]":
-        bot.send_message(chat_id, "ERRO NO METODO")
+        bot.send_message(chat_id, "ERRO NO METODO")"""
+
+
+#id_rec = bot.get_updates()[-1].message.text
