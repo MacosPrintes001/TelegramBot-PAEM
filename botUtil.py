@@ -9,24 +9,33 @@ def isTime(time, user): #Se preciar de tempo maior é só dividir horaIni e hora
 
     horaios = {'08:00 as 10:00','10:00 as 12:00', '14:00 as 16:00', 
                 '16:00 as 18:00', '18:00 as 20:00', '20:00 as 22:00'}
+
     if time in horaios:
 
         horaIni, _, horaFim = str(time).split(" ")
 
+        writeText(user, "hora_ini", horaIni)
+        writeText(user, "hora_fim", horaFim)
 
-        arc = open(user+".txt", "a")
-        arc.write(f"HORA_INI: {horaIni}\n")
-        arc.write(F"HORA_FIM: {horaFim}\n")
-        arc.close()
-
-        protocol = conection.getProtocol()
-        conection.backupDados(protocol, horaIni)
-        conection.backupDados(protocol, horaFim)
         return True
     else:
         return False
 
 
+def writeText(user, key, value):
+    arc = open(user+".text", "a")
+    arc.write(f"{key}: {value}\n")
+    arc.close()
+
+
+def writeJson(user, key, value):
+    user_json = dict()
+    user_json[key] = value
+    
+    with open(user+".json", "a") as user:
+        #json.dump(user_json
+        pass
+            
 def makeMenu(recursos_campus):
     msg = "Selecinone o Numero da opção\n"
     for i in recursos_campus:
@@ -50,10 +59,8 @@ def isDate(data_user, user):
         if newDate >= date.today():
             if newDate <= data_limite:
 
-                arc = open(user+".txt", "a")
                 finalDate = str(newDate)
-                arc.write(f"DATA: {finalDate}\n")
-                arc.close()
+                writeText(user, "data", finalDate)
 
                 return True, '' #é uma data valida
 

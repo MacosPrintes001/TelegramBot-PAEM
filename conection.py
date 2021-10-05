@@ -1,6 +1,8 @@
 import requests
 import json
 
+from botUtil import writeText
+
 
 token = ' '
 rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
@@ -33,14 +35,8 @@ def login(cpf, user):
                 if cpf in i.values():
 
                     id_usuario = str(i['id'])
-
-                    arc = open(user+".txt", "a") #CRIARNDO ARQIVO TXT
-                    arc.write(f"CPF: {cpf}\n")
-                    arc.write(f"ID_USUARIO: {id_usuario}\n")
-                    arc.close()
-                    
-                    """backupDados(protocolo, id_usuario)
-                    backupDados(protocolo, cpf)"""
+                    writeText(user, "cpf", cpf)
+                    writeText(user, "id_usuario", id_usuario)
                    
                     return True, ''
 
@@ -54,7 +50,6 @@ def login(cpf, user):
 
 def dadosUsuario(matricula, user):
     global token
-    dados = dict()
     try:
         bearer_token = f"Bearer {token}"
         payload = {"Authorization": bearer_token}
@@ -72,21 +67,13 @@ def dadosUsuario(matricula, user):
                 resp_campus_recursos = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
                 lista_recurso = resp_campus_recursos.json()
 
-                cont = 1
-                for i in lista_recurso:
-                    menu_recuso = ""
-                    dados[cont] = f"{cont} - {str(i['nome'])} {int(i['id'])}"
-                    menu_recuso = menu_recuso + f"{cont} - {str(i['nome'])}"
-                    cont+=1
+                menu_recursos, dados = criaMenu(lista_recurso)
 
-                arc = open(user+".txt", "a")
-                arc.write(f"NOME: {nome_discente}\n")
-                arc.write(f"ID_DISCENTE: {id_discente}\n")
-                arc.write(f"MATRICULA: {matricula_discente}\n")
-                arc.close()
-                
+                writeText(user, "nome", nome_discente)
+                writeText(user, "id_discente", id_discente)
+                writeText(user, "matricula", matricula_discente)
 
-                return True, dados, menu_recuso
+                return True, dados, menu_recursos
         
         return False, 2, ''
 
@@ -95,8 +82,18 @@ def dadosUsuario(matricula, user):
 
 
 
-def verific_id(id):
+def verific_id(recurso_user):
     try:
+
+        print(recurso_user)
+        recurso = str(recurso_user)
+        comprimento = len(recurso)
+        id = recurso[comprimento-2] + recurso[comprimento-1]
+        id = int(id)
+        
+
+        print(id)
+
         bearer_token = f"Bearer {token}"
         payload = {"Authorization": bearer_token}
         resp_campus = requests.get(url=f"{rota_base}/recursos_campus", headers=payload)
@@ -105,27 +102,32 @@ def verific_id(id):
         for i in recursos:
             compare = int(i['id'])
             if id == compare:
-                return True, '', ''
+                return True, '', '', id
         
-        menu = criaMenu(recursos)
-        return False, 4, menu
+        menu, dados = criaMenu(recursos)
+        return False, 4, menu, dados
     
     except Exception:
-        meni = criaMenu(recursos)
-        return False, 5, meni
+        meni, dados = criaMenu(recursos)
+        return False, 5, meni, dados
 
 
-def criaMenu(recurso):
-    msg = "Selecinone o Numero da opção\n"
-    for i in recurso:
-        msg = f"{msg}\n{str(i['id'])} - {str(i['nome'])}"
-    
-    return msg
+def criaMenu(lista_recurso):
+    dados = dict()
+    menu_recuso = "Selecinone o Numero da opção\n"
+    cont = 1
+    for i in lista_recurso:
+        dados[cont] = f"{cont} - {str(i['nome'])} {int(i['id'])}"
+        menu_recuso = f"{menu_recuso}\n{cont} - {str(i['nome'])}"
+        cont+=1
+
+    return menu_recuso, dados
             
 
 def getHora(idRecUser):
     try:
         hora=dict()
+
         bearer_token = f"Bearer {token}"
         payload = {"Authorization": bearer_token}
         resp_campus = requests.get(url=f"{rota_base}/recursos_campus/recurso_campus?id_recurso_campus={idRecUser}", headers=payload)
@@ -148,17 +150,22 @@ def getHora(idRecUser):
                 ant+=2
                 cont-=1
 
-            elif dot == 1:
-                menuHour = f"{menuHour}\n{cont} - 0{ant}:00 as {ant+2}:00"
-                #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
-                hora[cont]=f"{ant}:00 as {ant+2}:00"
-
             else:
-                menuHour = f"{menuHour}\n{cont} - {ant}:00 as {ant+2}:00"
-                #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
-                hora[cont]=f"{ant}:00 as {ant+2}:00"
-                ant+=2
+                if dot == 0:
+                    menuHour = f"{menuHour}\n{cont} - 0{ant}:00 as {ant+2}:00"
+                    #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
+                    hora[cont]=f"0{ant}:00 as {ant+2}:00"
+                    ant+=2
+
+                else:
+                    menuHour = f"{menuHour}\n{cont} - {ant}:00 as {ant+2}:00"
+                    #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
+                    hora[cont]=f"{ant}:00 as {ant+2}:00"
+                    ant+=2
+
             dot+=1
+
+        print(hora)
         return menuHour, hora
 
     except Exception:
@@ -174,12 +181,15 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
 def makeReservation(user):
     #para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso = getAlldata()
 
-    arc = open(user+".txt", "r")
+    """arc = open(user+".txt", "r")
     linhas = arc.readlines()
     out_file  = open(user+".json", "w")
+    
     json.dump(linhas, out_file)
     arc.close()
-    out_file.close()
+    out_file.close()"""
+
+
 
     """headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
     url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/"

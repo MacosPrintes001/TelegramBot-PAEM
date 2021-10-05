@@ -92,8 +92,9 @@ def doLogin(message):
         r = bot.send_message(chat_id, "Exemplo: 03051103072")
         bot.register_next_step_handler(r, doLogin)
 
-
+recursos = ''
 def searchUserData(message):
+    global recursos
     try:
 
         matricula = str(message.text)
@@ -102,10 +103,10 @@ def searchUserData(message):
         user = str(message.from_user.id)
 
         resp, info, recursos_campus = cnt.dadosUsuario(matricula, user)
+
         if resp:
 
-            # menu = botUtil.makeMenu(recursos_campus)
-
+            recursos = info
             bot.send_message(chat_id, f"Matricula Valida. Qual recurso vecê gostaria de reservar?")
             m = bot.send_message(chat_id, f"{recursos_campus}")
             bot.register_next_step_handler(m, requestHour)
@@ -125,49 +126,55 @@ def searchUserData(message):
 # VARIAVEL GLOBAL
 horario = ''
 
-
 def requestHour(message):
     global horario
-    chat_id = message.chat.id
-    id_recurso = int(message.text)
-    user = str(message.from_user.id)
+    try:
+        chat_id = message.chat.id
+        user = str(message.from_user.id)
 
-    resp, errorCode, menu = cnt.verific_id(id_recurso)
+        recurso_Usuario = recursos[int(message.text)] #DAR UM JEITO DE EXTRAIR O ID DO RECURSO
 
-    if resp:
-        arc = open(user + ".txt", "a")
-        arc.write(f"ID_RECURSO: {id_recurso}\n")
-        arc.close()
+        resp, errorCode, menu, id_recurso = cnt.verific_id(recurso_Usuario)
 
-        menuHour, hora = cnt.getHora(id_recurso)
+        if resp:
+            
+            botUtil.writeText(user, "id_recurso", id_recurso)
 
-        # ATRIBUI À VARIAVEL GLOBAL O DICIONARIO COM AS HORAS
-        horario = hora
+            menuHour, hora = cnt.getHora(id_recurso)
 
-        r = bot.send_message(chat_id, f"Escolha a opção referente aos horarios abaixo.\n{menuHour}")
+            # ATRIBUI À VARIAVEL GLOBAL O DICIONARIO COM AS HORAS
+            horario = hora
 
-        bot.register_next_step_handler(r, procHour)
+            r = bot.send_message(chat_id, f"Escolha a opção referente aos horarios abaixo.\n{menuHour}")
 
-    else:
+            bot.register_next_step_handler(r, procHour)
 
-        if errorCode == 4:  # id não encontrado
-            bot.send_message(chat_id, "Opção não reconhecida, tente novamente")
-            r = bot.send_message(chat_id, f"{menu}")
-            bot.register_next_step_handler(r, requestHour)
+        else:
 
-        elif errorCode == 5:  # algo que não é um id
-            m = bot.send_message(chat_id, f"Houve um erro no servidor, tente novamente.\n{menu}")
-            bot.register_next_step_handler(m, requestHour)
+            if errorCode == 4:  # id não encontrado
+                bot.send_message(chat_id, "Opção não reconhecida, tente novamente")
+                r = bot.send_message(chat_id, f"{menu}")
+                bot.register_next_step_handler(r, requestHour)
+
+            elif errorCode == 5:  # algo que não é um id
+                m = bot.send_message(chat_id, f"Houve um erro no servidor, tente novamente.\n{menu}")
+                bot.register_next_step_handler(m, requestHour)
+    
+    except Exception:
+        pass
 
 
 def procHour(message):
     # RETORNA AS HORAS REFERENTE A OPÇÃO ESCOLHIDA
     try:
         x = horario[int(message.text)]
+
+        print(x)
         chat_id = message.chat.id
         user = str(message.from_user.id)
 
         resp = botUtil.isTime(x, user)
+
 
         if resp:
             bot.send_message(chat_id, "Tudo certo, Hora valida. Mande a data para a qual vai ser a reserva.")
@@ -213,20 +220,18 @@ def forYou(message):
         user = str(message.from_user.id)
 
         if msg == 1:
+            
 
-            arc = open(user + ".txt", "a")
-            arc.write(f"PARA_SI: 1\n")
-            arc.close()
+            botUtil.writeText(user, "para_si", "1")
+            
 
             r = bot.send_message(chat_id,
                                  "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, então vou precisar qeu você mande ele pra mim")
             bot.register_next_step_handler(r, PhoneNumber)
 
         elif msg == 2:
-
-            arc = open(user + ".txt", "a")
-            arc.write(f"PARA_SI: 2\n")
-            arc.close()
+            
+            botUtil.writeText(user, "para_si", "2")
 
             r = bot.send_message(chat_id,
                                  "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, então vou precisar qeu você mande ele pra mim")
@@ -245,9 +250,9 @@ def forYou(message):
 def PhoneNumber(message):
     user = str(message.from_user.id)
     phone = str(message.text)
-    arc = open(user + ".txt", "a")
-    arc.write(f"TELEFONE: {phone}\n")
-    arc.close()
+
+    botUtil.writeText(user, "telefone", phone)
+    
     callReservation(message)
 
 
@@ -256,7 +261,6 @@ def callReservation(message):
 
     # pegar dados e fazer reserva
     user = str(message.from_user.id)
-    cnt.makeReservation(user)
 
     n = randint()
     print(n)
