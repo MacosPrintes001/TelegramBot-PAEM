@@ -1,8 +1,5 @@
-from time import sleep
 import requests
 import json
-
-from botMain import menu
 
 
 token = ' '
