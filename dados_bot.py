@@ -1,3 +1,3 @@
-mainBotToken = "1882993234:AAHrEN2ENJnE22NnGkyBpTeVFttjR034SCM"
+mainBotToken = "2066793250:AAEWGAxRWrd6oM-aexIj4s_BIs3y4OlQAe4"
 
-agendamentoBotToken = "1976133286:AAEZwtZrJOmBujbP-lFQ19UWiWqrVqZYPiA"
+agendamentoBotToken = "2044919319:AAFNR_jmu7az67Aj-FrGpTFfb6mDOwKma6M"
