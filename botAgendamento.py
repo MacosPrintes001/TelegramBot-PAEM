@@ -241,10 +241,16 @@ def forYou(message):
 
 
 def PhoneNumber(message):
-    user = str(message.from_user.id)
-    phone = str(message.text)
-    botUtil.writeText(user, "fone", phone)
-    callReservation(message)
+    try:
+        user = str(message.from_user.id)
+        phone = str(message.text)
+
+        int(phone)
+
+
+        botUtil.writeText(user, "fone", phone)
+        callReservation(message)
+    
 
 
 def callReservation(message):

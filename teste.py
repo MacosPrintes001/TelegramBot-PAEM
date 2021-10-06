@@ -224,7 +224,7 @@ print(res)
 
 
 
-
+"""
 from time import sleep
 import os
 usuario = 1832638103
@@ -232,4 +232,12 @@ p = str(usuario)
 arc = open(p + ".txt", "w")
 #sleep(1)
 arc.__del__()
-os.remove(p+".txt")
+os.remove(p+".txt")"""
+
+
+import phonenumbers
+
+#Ajuste do telefone para usar o phonenumbers
+telefone = "+5521999999999"
+telefone_ajustado = phonenumbers.parse(telefone)
+print(telefone_ajustado)
