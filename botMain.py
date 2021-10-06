@@ -53,7 +53,7 @@ def encaminhaBot(message):
     try:
         opc = int(opc)
         if opc == 1:
-            bot.send_message(chat_id, "OK, basta você falar com meu amigo @UfopaAgendamentoBot para agendar um horario")
+            bot.send_message(chat_id, "OK, basta você falar com meu amigo @ufopaAgendamento_bot para agendar um horario")
 
         else:
             bot.send_message(chat_id, "Esta função ainda não foi implementada, escolha outra")

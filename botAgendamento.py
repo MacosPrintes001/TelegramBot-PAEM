@@ -33,7 +33,7 @@ def registrado(message):
         elif resp == 2:
 
             bot.send_message(chat_id,
-                             "Certo, vá com o meu amigo @UFOPA_BOT e faça seu cadastro com ele e depois volte aqui comigo")
+                             "Certo, vá com o meu amigo @ufopa_bot e faça seu cadastro com ele e depois volte aqui comigo")
 
         else:
             r = bot.send_message(chat_id, "Não entendi o que você disse. Você já possui cadastro?\n1 - Sim\n2 - Não")
