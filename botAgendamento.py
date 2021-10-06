@@ -1,6 +1,3 @@
-from datetime import datetime
-from typing import Container
-from telebot.types import Update
 import dados_bot
 import telebot
 from random import randint
