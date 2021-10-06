@@ -129,15 +129,15 @@ count = 0"""
 
 
 
-"""dados_aluno = {          "para_si": int(aluno.para_si),
-                            "data": aluno.data,
-                            "hora_inicio": f"{aluno.hora_inicio}:00",
-                            "hora_fim": f"{aluno.hora_fim}:00",
-                            "status_acesso": 1,
-                            "nome": aluno.nome,
-                            "fone": aluno.telefone,
-                            "cpf": aluno.cpf,
-                            "usuario_id_usuario": int(aluno.id_usuario),
+"""dados_aluno = {          "para_si": int(aluno.para_si), OK
+                            "data": aluno.data, ok
+                            "hora_inicio": f"{aluno.hora_inicio}:00", ok
+                            "hora_fim": f"{aluno.hora_fim}:00", ok
+                            "status_acesso": 1, ok
+                            "nome": aluno.nome, ok
+                            "fone": aluno.telefone, ok
+                            "cpf": aluno.cpf, ok
+                            "usuario_id_usuario": int(aluno.id_usuario), ok
                             "discente_id_discente": int(aluno.id_discente),
                             "recurso_campus_id_recurso_campus": aluno.id_recurso}
 
@@ -172,3 +172,61 @@ def agendar(lista, token, chat_id):
 
 
 #id_rec = bot.get_updates()[-1].message.text
+
+
+
+
+
+import datetime
+
+
+data_user = "05/10/2021"
+
+
+
+
+
+
+
+
+import json
+
+import requests
+
+
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6Im1hcmNrIiwiZXhwIjoxNjMzNDc4NTYxfQ.9pdVVFNVanEaWXhVSoT5GFMB6aoL9KttQ6LaDEtyaxg"
+dicionario = dict()
+arq = open("1832638103.text", "r") 
+linhas = arq.read()
+dados = linhas.split("!")
+
+dados.remove("")
+
+for i in dados:
+    dados = i.split(";")
+    dicionario[dados[0]] = dados[1]
+
+
+dicionario['data'] = "05-10-2021"
+
+dados_aluno = {          "para_si": dicionario['para_si'],
+                            "data": dicionario['data'],
+                            "hora_inicio":dicionario['hora_inicio'],
+                            "hora_fim": dicionario['hora_fim'],
+                            "status_acesso": dicionario['status_acesso'],
+                            "nome": dicionario['nome'],
+                            "fone": dicionario['fone'],
+                            "cpf": dicionario['cpf'],
+                            "usuario_id_usuario": dicionario['usuario_id_usuario'],
+                            "discente_id_discente": dicionario['discente_id_discente'],
+                            "recurso_campus_id_recurso_campus": dicionario['recurso_campus_id_recurso_campus']}
+
+
+headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem"
+print("Indp na API")
+resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
+print("Voltei")
+res = str(resp)[10:15]
+print(res)
+#tranformar em json

@@ -36,7 +36,7 @@ def login(cpf, user):
 
                     id_usuario = str(i['id'])
                     writeText(user, "cpf", cpf)
-                    writeText(user, "id_usuario", id_usuario)
+                    writeText(user, "usuario_id_usuario", id_usuario)
                    
                     return True, ''
 
@@ -70,8 +70,9 @@ def dadosUsuario(matricula, user):
                 menu_recursos, dados = criaMenu(lista_recurso)
 
                 writeText(user, "nome", nome_discente)
-                writeText(user, "id_discente", id_discente)
-                writeText(user, "matricula", matricula_discente)
+                writeText(user, "discente_id_discente", id_discente)
+                writeText(user, "matricula", matricula)
+                #writeText(user, "matricula", matricula_discente)
 
                 return True, dados, menu_recursos
         
@@ -179,46 +180,52 @@ def backupDados(protocolo_usuario, dadoParaSalvar):
 
 
 def makeReservation(user):
-    #para_si, data, hora_inicio, hora_fim, phone, nome, cpf, id_usuario, id_discente, id_recurso = getAlldata()
+    try:
+        writeText(user, "status_acesso", "1")
 
-    """arc = open(user+".txt", "r")
-    linhas = arc.readlines()
-    out_file  = open(user+".json", "w")
-    
-    json.dump(linhas, out_file)
-    arc.close()
-    out_file.close()"""
+        dicionario = dict()
+        arq = open(user+".text", "r") 
+        linhas = arq.read()
+        dados = linhas.split("!")
+        dados.remove("")
+        for i in dados:
+            dados = i.split(";")
+            dicionario[dados[0]] = dados[1]
 
-
-
-    """headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
-    url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/"
-    resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(lista),headers=headers)
-    
-    res = str(resp)[10:15]
-    
-    if res == "[201]":
-        return "OK"
-
-    elif res == "[500]":
-        return "NOT"#aluno já reservou este local
-
-    elif res == "[400]":
-        return 'NOT' #erro no servidor
-
-    elif res == "[405]":
-        return 'NOT' #erro no metodo"""
+        
+        dados_aluno = {  "para_si": dicionario['para_si'],
+                        "data": dicionario['data'],
+                        "hora_inicio":dicionario['hora_inicio'],
+                        "hora_fim": dicionario['hora_fim'],
+                        "status_acesso": dicionario['status_acesso'],
+                        "nome": dicionario['nome'],
+                        "fone": dicionario['fone'],
+                        "cpf": dicionario['cpf'],
+                        "usuario_id_usuario": dicionario['usuario_id_usuario'],
+                        "discente_id_discente": dicionario['discente_id_discente'],
+                        "recurso_campus_id_recurso_campus": dicionario['recurso_campus_id_recurso_campus']}
 
 
-def getProtocol():
-    #ir no banco e voltar com o protocolo
-    pass
+        headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+        url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem"
+        print("Indp na API")
+        resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
+        print("Voltei")
+        res = str(resp)[10:15]
+        print(res)
+        
+        if res == "[201]":
+            return True
 
+        elif res == "[500]":
+            return False#aluno já reservou este local
 
-def getAlldata():
-    pass #função para recuperar todos os dados do usuario
+        elif res == "[400]":
+            return False #erro no servidor
 
+        elif res == "[405]":
+            return False #erro no metodo"""
+        return True
 
-def getDados(protocolo, dadosParaRecuperar):
-    #pegar algum dado
-    pass
+    except Exception:
+        return False

@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 import datetime
+from typing import final
 import conection
 
 
@@ -11,11 +12,11 @@ def isTime(time, user): #Se preciar de tempo maior é só dividir horaIni e hora
                 '16:00 as 18:00', '18:00 as 20:00', '20:00 as 22:00'}
 
     if time in horaios:
-
+            #alterar
         horaIni, _, horaFim = str(time).split(" ")
 
-        writeText(user, "hora_ini", horaIni)
-        writeText(user, "hora_fim", horaFim)
+        writeText(user, "hora_inicio", f"{horaIni}:00")
+        writeText(user, "hora_fim", f"{horaFim}:00")
 
         return True
     else:
@@ -24,7 +25,7 @@ def isTime(time, user): #Se preciar de tempo maior é só dividir horaIni e hora
 
 def writeText(user, key, value):
     arc = open(user+".text", "a")
-    arc.write(f"{key}: {value}\n")
+    arc.write(f"{key};{value}!")
     arc.close()
 
 
@@ -54,12 +55,14 @@ def isDate(data_user, user):
 
         newDate = datetime.date(ano, mes, dia)
 
-        data_limite = date.today() + timedelta(days=2)
+        data_limite = datetime.date.today() + datetime.timedelta(days=2)
 
-        if newDate >= date.today():
+        if newDate >= datetime.date.today():
             if newDate <= data_limite:
 
-                finalDate = str(newDate)
+                finalDate = str(newDate).split("-")
+                finalDate= f"{finalDate[2]}-{finalDate[1]}-{finalDate[0]}"
+                
                 writeText(user, "data", finalDate)
 
                 return True, '' #é uma data valida

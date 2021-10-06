@@ -138,7 +138,7 @@ def requestHour(message):
 
         if resp:
             
-            botUtil.writeText(user, "id_recurso", id_recurso)
+            botUtil.writeText(user, "recurso_campus_id_recurso_campus", id_recurso)
 
             menuHour, hora = cnt.getHora(id_recurso)
 
@@ -251,7 +251,7 @@ def PhoneNumber(message):
     user = str(message.from_user.id)
     phone = str(message.text)
 
-    botUtil.writeText(user, "telefone", phone)
+    botUtil.writeText(user, "fone", phone)
     
     callReservation(message)
 
@@ -261,13 +261,14 @@ def callReservation(message):
 
     # pegar dados e fazer reserva
     user = str(message.from_user.id)
-
-    n = randint()
-    print(n)
-    protocolo = message.from_user.id + n
-
     bot.send_message(chat_id, "Ok, só um segundo enquanto eu faço sua reserva")
-    bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso, seu protocolo é {protocolo}")
+
+    resp = cnt.makeReservation(user)
+
+    if resp:
+        bot.send_message(chat_id, f"Tudo certo, reserva feita com sucesso")
+    else:
+        bot.send_message(chat_id, "Deu Ruim")
 
     # DELETAR ARQUIVOS TXT
 
