@@ -1,19 +1,23 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime
 import datetime
-from typing import final
-import conection
-
+import os
+from time import sleep
 
 arc = ""
 
-def isTime(time, user): #Se preciar de tempo maior é só dividir horaIni e horaFim e verificar se algum esta em horarios
+def isTime(horarios, numb, user): #Se preciar de tempo maior é só dividir horaIni e horaFim e verificar se algum esta em horarios
 
-    horaios = {'08:00 as 10:00','10:00 as 12:00', '14:00 as 16:00', 
-                '16:00 as 18:00', '18:00 as 20:00', '20:00 as 22:00'}
+    t = False
+    horario = ''
+    try:
+        horario = horarios[numb]
+        t = True
+    except:
+        pass
 
-    if time in horaios:
+    if t:
             #alterar
-        horaIni, _, horaFim = str(time).split(" ")
+        horaIni, _, horaFim = str(horario).split(" ")
 
         writeText(user, "hora_inicio", f"{horaIni}:00")
         writeText(user, "hora_fim", f"{horaFim}:00")
@@ -23,27 +27,33 @@ def isTime(time, user): #Se preciar de tempo maior é só dividir horaIni e hora
         return False
 
 
-def writeText(user, key, value):
-    arc = open(user+".text", "a")
+def writeText(user, key, value): #CRIA E ESCREVE NO ARQUIVO TXT OS DADOS
+    """
+    USER: ID DE USUARIO DO TELEGRAM
+    KEY: NOME DA CHAVE QUE VAI GUARDAR O VALOR
+    VALUE: DADO A SER ESCRITO NO ARQUIVO
+    """
+    arc = open(user+".txt", "a")
     arc.write(f"{key};{value}!")
     arc.close()
 
 
-def writeJson(user, key, value):
-    user_json = dict()
-    user_json[key] = value
-    
-    with open(user+".json", "a") as user:
-        #json.dump(user_json
-        pass
-            
-def makeMenu(recursos_campus):
-    msg = "Selecinone o Numero da opção\n"
-    for i in recursos_campus:
-        msg = f"{msg}\n{str(i['id'])} - {str(i['nome'])}"
-    
-    return msg
+def removeFile(usuario):
+    p = str(usuario)
+    if os.path.exists(p+".txt"):
+        os.remove(p+".txt")
 
+
+def makeMenu(lista_recurso): #CRIA MENU COM OS RECURSOS
+    dados = dict()
+    menu_recuso = "Selecinone o Numero da opção\n"
+    cont = 1
+    for i in lista_recurso:
+        dados[cont] = f"{cont} - {str(i['nome'])} {int(i['id'])}"
+        menu_recuso = f"{menu_recuso}\n{cont} - {str(i['nome'])}"
+        cont+=1
+
+    return menu_recuso, dados
 
 def isDate(data_user, user):
     try:
@@ -54,27 +64,27 @@ def isDate(data_user, user):
         ano = int(data_[2])
 
         newDate = datetime.date(ano, mes, dia)
-
-        data_limite = datetime.date.today() + datetime.timedelta(days=2)
+        data_limite = datetime.date.today() + datetime.timedelta(days=7)
 
         if newDate >= datetime.date.today():
             if newDate <= data_limite:
 
                 finalDate = str(newDate).split("-")
                 finalDate= f"{finalDate[2]}-{finalDate[1]}-{finalDate[0]}"
-                
                 writeText(user, "data", finalDate)
 
                 return True, '' #é uma data valida
 
             else:
+
                 return False, 6 #é uma data, é maior que dois dias
 
         else:
+
             return False, 7 #data anterior a hoje
         
     except Exception:
-        print("ERRO Data")
+
         return False, 8 #não é uma data
 
 

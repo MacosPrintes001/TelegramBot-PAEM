@@ -173,21 +173,11 @@ def agendar(lista, token, chat_id):
 
 #id_rec = bot.get_updates()[-1].message.text
 
-
-
-
-
+"""
 import datetime
 
 
 data_user = "05/10/2021"
-
-
-
-
-
-
-
 
 import json
 
@@ -229,4 +219,17 @@ resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.d
 print("Voltei")
 res = str(resp)[10:15]
 print(res)
-#tranformar em json
+#tranformar em json"""
+
+
+
+
+
+from time import sleep
+import os
+usuario = 1832638103
+p = str(usuario)
+arc = open(p + ".txt", "w")
+#sleep(1)
+arc.__del__()
+os.remove(p+".txt")
