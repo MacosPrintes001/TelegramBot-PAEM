@@ -27,6 +27,31 @@ def isTime(horarios, numb, user): #Se preciar de tempo maior é só dividir hora
         return False
 
 
+def verificPhoneNumber(phoneNumber, user):
+
+    numeroCelular = phoneNumber
+    try:
+        if len(numeroCelular) != 11:
+            raise ValueError
+        else:
+
+            numeroCelular = int(numeroCelular)# se contiver letras causa um ValueError
+            numeroCelular = str(numeroCelular)
+
+            celular = numeroCelular
+            telFormatado = f"({celular[0:2]}) {celular[2]}-{celular[3:7]}-{celular[7:]}"
+
+            writeText(user, "fone", telFormatado)
+
+            return True #numero valido
+
+    except ValueError:
+        if len(numeroCelular) == 0:
+            return False #não digitou um numero
+        else:
+            return False #numero invalido
+
+
 def writeText(user, key, value): #CRIA E ESCREVE NO ARQUIVO TXT OS DADOS
     """
     USER: ID DE USUARIO DO TELEGRAM

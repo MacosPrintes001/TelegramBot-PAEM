@@ -242,15 +242,22 @@ def forYou(message):
 
 def PhoneNumber(message):
     try:
+        chat_id = message.chat.id
         user = str(message.from_user.id)
-        phone = str(message.text)
+        phone = message.text
 
-        int(phone)
+        resp = botUtil.verificPhoneNumber(phone, user)
 
+        if resp:
+            callReservation(message)
+        else:
+            r = bot.send_message(chat_id, "Numero de telefone invalido, digite APENAS OS NUMEROS do seu telefone")
+            bot.register_next_step_handler(r, PhoneNumber)
 
-        botUtil.writeText(user, "fone", phone)
-        callReservation(message)
-    
+    except Exception:
+        chat = message.chat.id
+        r = bot.send_message(chat, "Numero de telefone invalido, digite APENAS OS NUMEROS do seu telefone")
+        bot.register_next_step_handler(r, PhoneNumber)
 
 
 def callReservation(message):

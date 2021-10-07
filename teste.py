@@ -235,9 +235,37 @@ arc.__del__()
 os.remove(p+".txt")"""
 
 
-import phonenumbers
 
-#Ajuste do telefone para usar o phonenumbers
-telefone = "+5521999999999"
-telefone_ajustado = phonenumbers.parse(telefone)
-print(telefone_ajustado)
+"""#Ajuste do telefone para usar o phonenumbers
+def verificPhone(phone):
+    cond=''
+    telefone_teste= phone
+    ddd= phone[0:4]
+
+    if '(' in telefone_teste  and ')' in telefone_teste and '-' in telefone_teste and len(telefone_teste)>=14 and len(telefone_teste)< 16:
+        cond=True
+    else:
+        cond=False
+    
+    return cond
+
+
+num = '(93) 99122-6497'
+r = verificPhone(num)
+print(r)"""
+
+
+
+
+
+import re
+
+pattern = r"^(\d{2})(\d?)(\d{4})(\d{4})$"
+
+if re.match(pattern, input()):
+    print("Valid")
+else:
+    print("Invalid")
+
+
+
