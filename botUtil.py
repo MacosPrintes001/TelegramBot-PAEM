@@ -39,7 +39,7 @@ def verificPhoneNumber(phoneNumber, user):
             numeroCelular = str(numeroCelular)
 
             celular = numeroCelular
-            telFormatado = f"({celular[0:2]}) {celular[2]}-{celular[3:7]}-{celular[7:]}"
+            telFormatado = f"({celular[0:2]}) {celular[2]} {celular[3:7]}-{celular[7:]}"
 
             writeText(user, "fone", telFormatado)
 
