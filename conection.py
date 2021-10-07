@@ -177,6 +177,7 @@ def makeReservation(user):
                         "recurso_campus_id_recurso_campus": dicionario['recurso_campus_id_recurso_campus']}
 
 
+
         headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
         url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem"
         resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
