@@ -254,18 +254,14 @@ num = '(93) 99122-6497'
 r = verificPhone(num)
 print(r)"""
 
-
-
-
-
-import re
+"""import re
 
 pattern = r"^(\d{2})(\d?)(\d{4})(\d{4})$"
 
 if re.match(pattern, input()):
     print("Valid")
 else:
-    print("Invalid")
+    print("Invalid")"""
 
 
 

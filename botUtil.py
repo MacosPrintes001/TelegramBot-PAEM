@@ -69,6 +69,7 @@ def removeFile(usuario):
         os.remove(p+".txt")
 
 
+
 def makeMenu(lista_recurso): #CRIA MENU COM OS RECURSOS
     dados = dict()
     menu_recuso = "Selecinone o Numero da opção\n"
