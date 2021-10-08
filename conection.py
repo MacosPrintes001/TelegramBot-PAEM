@@ -1,11 +1,12 @@
 import requests
 import json
+import dados_bot
 
 from botUtil import writeText, makeMenu, removeFile
 
 
 token = ' '
-rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
+rota_base = dados_bot.rota_base
 
 
 ''' ### codigos erros ### 
@@ -121,6 +122,8 @@ def getHora(idRecUser):
 
         horaIni = recurso['inicio_horario_funcionamento']
         horaFim = recurso['fim_horario_funcionamento']
+        qtdHoras = recurso['quantidade_horas']
+        capacidade = recurso['capacidade']
 
         ini = int(horaIni[0:2])
         fim = int(horaFim[0:2])
@@ -136,6 +139,7 @@ def getHora(idRecUser):
             if dot == 2:
                 ant+=2
                 cont-=1
+                
             else:
                 menuHour = f"{menuHour}\n{cont} - {ant}:00 as {ant+2}:00"
                 #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO

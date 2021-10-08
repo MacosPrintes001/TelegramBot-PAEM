@@ -265,3 +265,58 @@ else:
 
 
 
+#from botMain import menu
+
+
+
+
+'''while ant < fim:
+
+    cont+=1
+    
+
+    if dot == 2:
+        ant+=2
+        cont-=1
+    else:
+        menuHour = f"{menuHour}\n{cont} - {ant}:00 as {ant+qtdHoras}:00"
+        #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
+    
+    dot+=1
+
+'''
+
+capacidade = 16
+ini = 8
+fim = 18
+qtdHoras = 2
+
+
+cardapio=''
+cont=1
+
+for flag in range(ini,fim+1):
+    a = flag
+    hora=f'{cont} - {a}:00 as {a+qtdHoras}:00\n'
+
+    if flag+qtdHoras > fim:
+        a = flag=2
+        pass
+    
+    else:
+        cardapio+=hora
+    a = flag=2
+    cont+=1
+
+print(cardapio)
+
+
+"""if flag+qtdHoras > fim:
+    print('aqui')
+    pass
+elif flag + (flag+qtdHoras) == 23:
+    cont-=1
+    pass
+else:
+    cardapio+=hora
+cont+=1"""

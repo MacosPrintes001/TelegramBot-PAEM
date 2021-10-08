@@ -70,7 +70,7 @@ def removeFile(usuario):
 
 
 
-def makeMenu(lista_recurso): #CRIA MENU COM OS RECURSOS
+def makeMenu(lista_recurso): #CRIA MENU COM json de RECURSOS
     dados = dict()
     menu_recuso = "Selecinone o Numero da opção\n"
     cont = 1
