@@ -288,24 +288,26 @@ else:
 
 capacidade = 16
 ini = 8
-fim = 18
-qtdHoras = 2
+fim = 22
+qtdHoras = 3
 
 
+ant = ini
 cardapio=''
 cont=1
 
 for flag in range(ini,fim+1):
-    a = flag
-    hora=f'{cont} - {a}:00 as {a+qtdHoras}:00\n'
+    hora=dict()
+    h = ant+qtdHoras
+    menuHour=f'{cont} - {ant}:00 as {h}:00\n'
 
-    if flag+qtdHoras > fim:
-        a = flag=2
+    if ant+qtdHoras > fim:
         pass
-    
+    #if ant+qtdHoras 
     else:
-        cardapio+=hora
-    a = flag=2
+        cardapio+=menuHour
+        ant+=qtdHoras
+        #hora[cont]=f"{ini}:00 as {ini+qtdHoras}:00"
     cont+=1
 
 print(cardapio)
