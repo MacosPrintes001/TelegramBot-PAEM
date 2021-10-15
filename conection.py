@@ -1,8 +1,10 @@
 import requests
 import json
 import dados_bot
+from datetime import date, datetime
 
-from botUtil import writeText, makeMenu, removeFile
+
+from botUtil import writeText, makeMenu, removeFile, makeDictionary
 
 
 token = ' '
@@ -50,7 +52,6 @@ def login(cpf, user):
         return False, 0
 
 
-
 def dadosUsuario(matricula, user):
     global token
     try:
@@ -83,7 +84,6 @@ def dadosUsuario(matricula, user):
         return False, 3, '' #USUARIO ENVIU UM CARACTERE DESCONEHCIDO
 
 
-
 def verific_id(recurso_user): #FAZ A VERIFICAÇÃO DA OPÇÃO ESCOLHIDA PELO USUARIO
     try:
 
@@ -110,7 +110,7 @@ def verific_id(recurso_user): #FAZ A VERIFICAÇÃO DA OPÇÃO ESCOLHIDA PELO USU
         return False, 5, meni, dados
             
 
-def getHora(idRecUser):
+def getHora(idRecUser, user):
     try:
         hora=dict()
 
@@ -119,12 +119,13 @@ def getHora(idRecUser):
         resp_campus = requests.get(url=f"{rota_base}/recursos_campus/recurso_campus?id_recurso_campus={idRecUser}", headers=payload)
         recurso = resp_campus.json()
 
-
         horaIni = recurso['inicio_horario_funcionamento']
         horaFim = recurso['fim_horario_funcionamento']
-        qtdHoras = recurso['quantidade_horas']
         capacidade = recurso['capacidade']
 
+        writeText(user, 'capacidade', capacidade)
+
+        
         ini = int(horaIni[0:2])
         fim = int(horaFim[0:2])
 
@@ -135,7 +136,6 @@ def getHora(idRecUser):
 
         while ant < fim:
             cont+=1
-
             if dot == 2:
                 ant+=2
                 cont-=1
@@ -145,28 +145,53 @@ def getHora(idRecUser):
                 #INSERE NO DICIONARIO AS HORAS REFERENTE AO RECURSO ESCOLHIDO
                 hora[cont]=f"{ant}:00 as {ant+2}:00"
                 ant+=2
-    
             dot+=1
-
         return menuHour, hora
 
     except Exception:
         pass
 
 
+
+def verificCapacity(user):
+    print("chegeui")
+    bearer_token = f"Bearer {token}"
+    payload = {"Authorization": bearer_token}
+    suporte=0
+    capacidade=0
+
+    dicionario = makeDictionary(user)
+    id_recurso = int(dicionario["recurso_campus_id_recurso_campus"])
+    capacidade = int(dicionario['capacidade'])
+
+    data_user = dicionario['data']
+    horaIni = dicionario['hora_inicio']
+    horaFim = dicionario['hora_fim']
+    
+    resp_solicitacao = requests.get(url=f"{rota_base}/solicitacoes_acessos", headers=payload)
+    json_solicitacao = resp_solicitacao.json()
+
+    for i in json_solicitacao:
+        idRecurso = int(i['recurso_campus_id_recurso_campus'])
+        if id_recurso == idRecurso:
+            data_old = datetime.strptime(str(i['data']), '%Y-%m-%d').date()
+            dataFormatada = data_old.strftime('%d-%m-%Y')
+            if data_user in str(dataFormatada):
+                if horaIni in str(i["hora_inicio"]) and horaFim in str(i['hora_fim']):
+                    suporte+=1
+ 
+    if suporte >= capacidade:
+        return False
+    else:
+        return True
+
+
+
 def makeReservation(user):
     try:
         writeText(user, "status_acesso", "1")
 
-        dicionario = dict()
-        arq = open(user+".txt", "r")
-        linhas = arq.read()
-        dados = linhas.split("!")
-        dados.remove("")
-        for i in dados:
-            dados = i.split(";")
-            dicionario[dados[0]] = dados[1]
-        arq.close()
+        dicionario = makeDictionary(user)
         
         dados_aluno = {  "para_si": dicionario['para_si'],
                         "data": dicionario['data'],

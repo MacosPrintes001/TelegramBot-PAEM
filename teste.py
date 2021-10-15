@@ -285,7 +285,7 @@ else:
     dot+=1
 
 '''
-
+"""
 capacidade = 16
 ini = 8
 fim = 22
@@ -311,6 +311,24 @@ for flag in range(ini,fim+1):
     cont+=1
 
 print(cardapio)
+"""
+"""
+from datetime import date, datetime
+data1 = "2021-10-24"
+data2 = "24-10-2021"
+
+
+data = datetime.strptime(data1, '%Y-%m-%d').date()
+dataFormatada = data.strftime('%d-%m-%Y')
+
+print(dataFormatada)"""
+
+
+"""if data1 in data2:
+    #print("igual")
+else:
+    #print("Não igual")
+"""
 
 
 """if flag+qtdHoras > fim:

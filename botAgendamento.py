@@ -21,13 +21,6 @@ def start(message):
     bot.register_next_step_handler(r, registrado)
 
 
-@bot.message_handler(commands=['stop'])
-def stop(message):
-    bot.reply_to(message, "Certo, quando quiser realizar uma solicitação basta me chamar que estarei aqui")
-    bot.send_message(message.chat.id, "Serviço encerrado")
-
-
-
 def registrado(message):
     try:
         chat_id = message.chat.id
@@ -134,16 +127,14 @@ def requestHour(message):
         resp, errorCode, menu, id_recurso = cnt.verific_id(recurso_Usuario) #VERIFICA SE A OPÇÃO ESCOLHIDA É VALIDA
 
         if resp: 
+
             botUtil.writeText(user, "recurso_campus_id_recurso_campus", id_recurso)
 
-            menuHour, hora = cnt.getHora(id_recurso)
-
-            # ATRIBUI À VARIAVEL GLOBAL O DICIONARIO COM AS HORAS
-            horarios = hora
-
+            menuHour, hora = cnt.getHora(id_recurso, user)
+            horarios = hora # ATRIBUI À VARIAVEL GLOBAL O DICIONARIO COM AS HORAS
             r = bot.send_message(chat_id, f"Escolha a opção referente aos horarios abaixo.\n{menuHour}")
             bot.register_next_step_handler(r, procHour)
-
+            
         else:
             if errorCode == 4:  # id não encontrado
                 bot.send_message(chat_id, "Opção não reconhecida, tente novamente")
@@ -194,23 +185,45 @@ def procDate(message):
     resp, errorCode = botUtil.isDate(data_user, user)
 
     if resp:
-        r = bot.send_message(chat_id, f"Data valida. A reserva é para você?\n1 - Sim\n2 - Não")
-        bot.register_next_step_handler(r, forYou)
 
+        resp = cnt.verificCapacity(user)  #verificar capacidade
+
+        if resp:#há vagas
+            print("há vagas")
+            r = bot.send_message(chat_id, f"Data valida. A reserva é para você?\n1 - Sim\n2 - Não")
+            bot.register_next_step_handler(r, forYou)
+
+        else: #não ha vagas
+            print("não há vagas")
+            r = bot.send_message(chat_id, f"Não há vagas para o recurso escolhido neste dia e horario gostaria de escolher outro recurso?\n1 - Sim\n2 - Não")
+            bot.register_next_step_handler(r, semVagas)
     else:
         if errorCode == 6:
             r = bot.send_message(chat_id, "Data inválida. A data não pode ser posterior a sete dias")
             bot.register_next_step_handler(r, procDate)
 
         elif errorCode == 7:
-            r = bot.send_message(chat_id,
-                                 "Data inválida. A data não pode ser anterior ao dia de hoje, tente novamente.")
+            r = bot.send_message(chat_id, "Data inválida. A data não pode ser anterior ao dia de hoje, tente novamente.")
             bot.register_next_step_handler(r, procDate)
 
         else:
             bot.send_message(chat_id, "Formato de data invalido. Envie novamente, siga o exemplo")
             r = bot.send_message(chat_id, "Ex: 24/10/2021")
             bot.register_next_step_handler(r, procDate)
+
+
+
+def semVagas(message):
+    resp_user = int(message.text)
+    chat_id = message.chat.id
+
+    if resp_user == 1:
+        bot.send_message(chat_id, "Função não implementada, digite /start e refaça o formulario")
+        
+    else:
+        #seção encerrada
+        bot.send_message(chat_id, "Certo, quando quiser realizar uma solicitação basta me chamar que estarei aqui")
+        bot.send_message(chat_id, "Serviço encerrado")
 
 
 def forYou(message):
@@ -238,7 +251,6 @@ def forYou(message):
         chat = message.chat.id
         r = bot.send_message(chat, "Não entendi, essa reserva é para você?\n1 - Sim\n2 - Não")
         bot.register_next_step_handler(r, forYou)
-
 
 
 def PhoneNumber(message):
@@ -278,7 +290,6 @@ def indef(message):
     chat_id = message.chat.id
     bot.send_message(chat_id,
                      "Desculpe, não entendi o que disse, por favor clique em /start para iniciar o atendimento")
-
 
 
 try:

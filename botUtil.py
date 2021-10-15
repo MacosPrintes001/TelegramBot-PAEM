@@ -27,6 +27,7 @@ def isTime(horarios, numb, user): #Se preciar de tempo maior é só dividir hora
         return False
 
 
+
 def verificPhoneNumber(phoneNumber, user):
 
     numeroCelular = phoneNumber
@@ -52,6 +53,7 @@ def verificPhoneNumber(phoneNumber, user):
             return False #numero invalido
 
 
+
 def writeText(user, key, value): #CRIA E ESCREVE NO ARQUIVO TXT OS DADOS
     """
     USER: ID DE USUARIO DO TELEGRAM
@@ -61,6 +63,7 @@ def writeText(user, key, value): #CRIA E ESCREVE NO ARQUIVO TXT OS DADOS
     arc = open(user+".txt", "a")
     arc.write(f"{key};{value}!")
     arc.close()
+
 
 
 def removeFile(usuario):
@@ -80,6 +83,23 @@ def makeMenu(lista_recurso): #CRIA MENU COM json de RECURSOS
         cont+=1
 
     return menu_recuso, dados
+
+
+
+def makeDictionary(user):
+    dicionario = dict()
+    arq = open(user+".txt", "r")
+    linhas = arq.read()
+    dados = linhas.split("!")
+    dados.remove("")
+    for i in dados:
+        dados = i.split(";")
+        dicionario[dados[0]] = dados[1]
+    arq.close()
+
+    return dicionario
+
+
 
 def isDate(data_user, user):
     try:
