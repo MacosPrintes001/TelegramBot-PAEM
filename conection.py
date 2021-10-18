@@ -154,7 +154,6 @@ def getHora(idRecUser, user):
 
 
 def verificCapacity(user):
-    print("chegeui")
     bearer_token = f"Bearer {token}"
     payload = {"Authorization": bearer_token}
     suporte=0
@@ -174,8 +173,7 @@ def verificCapacity(user):
     for i in json_solicitacao:
         idRecurso = int(i['recurso_campus_id_recurso_campus'])
         if id_recurso == idRecurso:
-            data_old = datetime.strptime(str(i['data']), '%Y-%m-%d').date()
-            dataFormatada = data_old.strftime('%d-%m-%Y')
+            dataFormatada = datetime.strptime(str(i['data']), '%Y-%m-%d').date()
             if data_user in str(dataFormatada):
                 if horaIni in str(i["hora_inicio"]) and horaFim in str(i['hora_fim']):
                     suporte+=1

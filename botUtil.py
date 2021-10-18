@@ -116,7 +116,7 @@ def isDate(data_user, user):
             if newDate <= data_limite:
 
                 finalDate = str(newDate).split("-")
-                finalDate= f"{finalDate[2]}-{finalDate[1]}-{finalDate[0]}"
+                finalDate= f"{finalDate[0]}-{finalDate[1]}-{finalDate[2]}"
                 writeText(user, "data", finalDate)
 
                 return True, '' #é uma data valida
