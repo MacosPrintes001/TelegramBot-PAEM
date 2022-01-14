@@ -28,7 +28,7 @@ def login(cpf, user):
         response = requests.post(url=f"{rota_base}/auth.bot", headers=headers) #ENTRA NA ROTA AUTH.BOT PARA REALIZAR LOGIN
         res = str(response)[10:15]
 
-        if res == '[200]': #LIGIN EFETUADO
+        if res == '[200]': #LOGIN EFETUADO
 
             token = json.loads(response.content).get('token')
             bearer_token = f"Bearer {token}"
@@ -45,7 +45,11 @@ def login(cpf, user):
                    
                     return True, ''
 
-        elif res == '[400]': #CPF NÃO ENCONTRADO
+                else:
+                    return False, 1
+
+
+        else: #CPF NÃO ENCONTRADO
             return False, 1
 
     except Exception:  #PROBLEMA NA CONEXÃO
