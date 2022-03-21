@@ -221,7 +221,7 @@ def forYou(message):
         if msg == 1:
             botUtil.writeText(user, "para_si", "1")
             r = bot.send_message(chat_id,
-                                 "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, então vou precisar qeu você mande ele pra mim")
+                                 "Ok, ultima coisa, por questões de segurança o Telegram não me permite  ver seu numero de telelfone, então vou precisar que você mande ele pra mim")
             bot.register_next_step_handler(r, PhoneNumber)
 
         elif msg == 2:

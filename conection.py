@@ -164,24 +164,30 @@ def makeReservation(user):
             dicionario[dados[0]] = dados[1]
         arq.close()
         
-        dados_aluno = {  "para_si": dicionario['para_si'],
-                        "data": dicionario['data'],
-                        "hora_inicio":dicionario['hora_inicio'],
-                        "hora_fim": dicionario['hora_fim'],
-                        "status_acesso": dicionario['status_acesso'],
-                        "nome": dicionario['nome'],
-                        "fone": dicionario['fone'],
-                        "cpf": dicionario['cpf'],
-                        "usuario_id_usuario": dicionario['usuario_id_usuario'],
-                        "discente_id_discente": dicionario['discente_id_discente'],
-                        "recurso_campus_id_recurso_campus": dicionario['recurso_campus_id_recurso_campus']}
+        
+        dados_aluno = { 
+                        "para_si": int(dicionario["para_si"]),
+                        "data": dicionario["data"],
+                        "hora_inicio":dicionario["hora_inicio"],
+                        "hora_fim":dicionario["hora_fim"],
+                        "status_acesso":int(dicionario["status_acesso"]),
+                        "nome":dicionario["nome"],
+                        "fone":dicionario["fone"],
+                        "matricula": dicionario["matricula"],
+                        "usuario_id_usuario": int(dicionario["usuario_id_usuario"]),
+                        "discente_id_discente": int(dicionario["discente_id_discente"]),
+                        "recurso_campus_id_recurso_campus":int(dicionario["recurso_campus_id_recurso_campus"]),
+                        "acesso_permitido_id_acesso_permitido":int(dicionario["status_acesso"]),
+                        "campus_instituto_id_campus_instituto":int(dicionario["recurso_campus_id_recurso_campus"])}
 
+        print(dados_aluno)
 
-
-        headers = {"Authorization":f"Bearer {token}", "Content-Type": "application/json"}
+        headers = {"Authorization":f"Bearer {token}"}
         url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem"
         resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
+        print(resp)
         res = str(resp)[10:15]
+        print(res)
         
         if res == "[201]":
 
