@@ -4,6 +4,7 @@ import telebot
 from random import randint
 import conection as cnt
 import botUtil
+import teste
 
 token = dados_bot.agendamentoBotToken
 bot = telebot.TeleBot(token)
@@ -19,10 +20,17 @@ def start(message):
     r = bot.send_message(chat_id,
                          "Olá, bem-vindo(a) ao sistema de agendamento da UFOPA. Você já possui cadastro no sistema?\n1 - Sim\n2 - Não")
     bot.register_next_step_handler(r, registrado)
+    print("Ainda não fui")
+
+
+@bot.message_handler(commands=['stop'])
+def stop(message):
+    bot.reply_to(message, "Certo, encerrado, até a próxima")
 
 
 def registrado(message):
     try:
+        print("Agora cheguei")
         chat_id = message.chat.id
         resp = int(message.text)
 
