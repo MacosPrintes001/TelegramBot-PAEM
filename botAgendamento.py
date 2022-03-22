@@ -280,7 +280,6 @@ def indef(message):
                      "Desculpe, não entendi o que disse, por favor clique em /start para iniciar o atendimento")
 
 
-
 try:
     bot.polling(none_stop=True, interval=5, timeout=20)
 except:

@@ -1,11 +1,11 @@
+from lib2to3.pgen2.token import RPAR
 import requests
 import json
-
+from dados_bot import rota_base
 from botUtil import writeText, makeMenu, removeFile
 
 
 token = ' '
-rota_base = 'http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem/'
 
 
 ''' ### codigos erros ### 
@@ -28,6 +28,7 @@ def login(cpf, user):
         if res == '[200]': #LIGIN EFETUADO
 
             token = json.loads(response.content).get('token')
+            print(token)
             bearer_token = f"Bearer {token}"
             payload = {"Authorization": bearer_token}
             res = requests.get(url=f"{rota_base}/usuarios",headers=payload)
@@ -85,6 +86,7 @@ def dadosUsuario(matricula, user):
 
 def verific_id(recurso_user): #FAZ A VERIFICAÇÃO DA OPÇÃO ESCOLHIDA PELO USUARIO
     try:
+        global token
 
         recurso = str(recurso_user)
         comprimento = len(recurso)
@@ -152,6 +154,9 @@ def getHora(idRecUser):
 
 def makeReservation(user):
     try:
+        global token
+
+        print(token)
         writeText(user, "status_acesso", "1")
 
         dicionario = dict()
@@ -166,25 +171,24 @@ def makeReservation(user):
         
         
         dados_aluno = { 
-                        "para_si": int(dicionario["para_si"]),
+                        "para_si": dicionario["para_si"],
                         "data": dicionario["data"],
                         "hora_inicio":dicionario["hora_inicio"],
                         "hora_fim":dicionario["hora_fim"],
-                        "status_acesso":int(dicionario["status_acesso"]),
+                        "status_acesso":dicionario["status_acesso"],
                         "nome":dicionario["nome"],
                         "fone":dicionario["fone"],
                         "matricula": dicionario["matricula"],
-                        "usuario_id_usuario": int(dicionario["usuario_id_usuario"]),
-                        "discente_id_discente": int(dicionario["discente_id_discente"]),
-                        "recurso_campus_id_recurso_campus":int(dicionario["recurso_campus_id_recurso_campus"]),
-                        "acesso_permitido_id_acesso_permitido":int(dicionario["status_acesso"]),
-                        "campus_instituto_id_campus_instituto":int(dicionario["recurso_campus_id_recurso_campus"])}
+                        "usuario_id_usuario": dicionario["usuario_id_usuario"],
+                        "discente_id_discente": dicionario["discente_id_discente"],
+                        "recurso_campus_id_recurso_campus":dicionario["recurso_campus_id_recurso_campus"],
+                        "acesso_permitido_id_acesso_permitido":dicionario["status_acesso"],
+                        "campus_instituto_id_campus_instituto":dicionario["recurso_campus_id_recurso_campus"]}
 
         print(dados_aluno)
-
-        headers = {"Authorization":f"Bearer {token}"}
-        url = "http://webservicepaem-env.eba-mkyswznu.sa-east-1.elasticbeanstalk.com/api.paem"
-        resp = requests.post(url+"/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
+        headers = {"Authorization": f"Bearer {token}"}
+  
+        resp = requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=json.dump(dados_aluno),headers=headers)
         print(resp)
         res = str(resp)[10:15]
         print(res)
@@ -201,8 +205,9 @@ def makeReservation(user):
             return False #erro no servidor
 
         elif res == "[405]":
-            return False #erro no metodo"""
-        return True
+            return False #erro no metodo
+        
+        return False
 
     except Exception:
         return False
