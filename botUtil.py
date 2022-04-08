@@ -95,9 +95,9 @@ def isDate(data_user, user):
         if newDate >= datetime.date.today():
             if newDate <= data_limite:
 
-                finalDate = str(newDate).split("-")
-                finalDate= f"{finalDate[2]}-{finalDate[1]}-{finalDate[0]}"
-                writeText(user, "data", finalDate)
+                #finalDate = str(newDate).split("-")
+                #finalDate= f"{finalDate[2]}-{finalDate[1]}-{finalDate[0]}"
+                writeText(user, "data", newDate)
 
                 return True, '' #é uma data valida
 

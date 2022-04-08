@@ -265,3 +265,23 @@ else:
 
 
 
+
+dados_aluno = {
+    'recurso_campus_id_recurso_campus' = 1,
+    'data' =>  $newdata,
+    'hora_inicio' => $hi_hf[0],
+    'hora_fim' => $hi_hf[1],
+    'nome' =>  strtoupper(addslashes($_POST['nome'])),
+    'discente_id_discente' => strval( addslashes($_POST['id_disc'])),
+    'para_si' => 1,
+    'status_acesso' => 1
+  
+ }
+        
+
+        print(dados_aluno)
+        headers = {"Authorization":f"Bearer {token}"}
+        resp = requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
+        print(resp)
+        res = str(resp)[10:15]
+        print(res)

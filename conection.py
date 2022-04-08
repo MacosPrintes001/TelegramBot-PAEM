@@ -28,7 +28,6 @@ def login(cpf, user):
         if res == '[200]': #LIGIN EFETUADO
 
             token = json.loads(response.content).get('token')
-            print(token)
             bearer_token = f"Bearer {token}"
             payload = {"Authorization": bearer_token}
             res = requests.get(url=f"{rota_base}/usuarios",headers=payload)
@@ -156,7 +155,6 @@ def makeReservation(user):
     try:
         global token
 
-        print(token)
         writeText(user, "status_acesso", "1")
 
         dicionario = dict()
@@ -169,7 +167,6 @@ def makeReservation(user):
             dicionario[dados[0]] = dados[1]
         arq.close()
         
-        
         dados_aluno = { 
                         "para_si": dicionario["para_si"],
                         "data": dicionario["data"],
@@ -178,38 +175,26 @@ def makeReservation(user):
                         "status_acesso":dicionario["status_acesso"],
                         "nome":dicionario["nome"],
                         "fone":dicionario["fone"],
-                        "matricula": dicionario["matricula"],
-                        "usuario_id_usuario": dicionario["usuario_id_usuario"],
+                        "usuario_id_usuario": int(dicionario["usuario_id_usuario"]),
                         "discente_id_discente": dicionario["discente_id_discente"],
-                        "recurso_campus_id_recurso_campus":dicionario["recurso_campus_id_recurso_campus"],
-                        "acesso_permitido_id_acesso_permitido":dicionario["status_acesso"],
-                        "campus_instituto_id_campus_instituto":dicionario["recurso_campus_id_recurso_campus"]}
+                        "recurso_campus_id_recurso_campus":dicionario["recurso_campus_id_recurso_campus"]}
 
-        print(dados_aluno)
-        headers = {"Authorization": f"Bearer {token}"}
-  
-        resp = requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=json.dump(dados_aluno),headers=headers)
-        print(resp)
-        res = str(resp)[10:15]
-        print(res)
         
+        print(json.dumps(dados_aluno))
+        fData = json.dumps(dados_aluno)
+        header = {"content-Type: application/json", f"Authorization: Bearer {token}"}
+        print("Fiz o header")
+        resp =  requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=fData, headers=header)
+        res = str(resp)[10:15]
         if res == "[201]":
-
+            print("Tudo certo")
             removeFile(user)
             return True
-
-        elif res == "[500]":
-            return False#aluno já reservou este local
-
-        elif res == "[400]":
-            return False #erro no servidor
-
-        elif res == "[405]":
-            return False #erro no metodo
-        
-        return False
+        else:
+            return False
 
     except Exception:
+        print("Deu erro")
         return False
 
 
