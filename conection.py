@@ -1,4 +1,6 @@
+from email import header
 from lib2to3.pgen2.token import RPAR
+import this
 import requests
 import json
 from dados_bot import rota_base
@@ -25,7 +27,7 @@ def login(cpf, user):
         response = requests.post(url=f"{rota_base}/auth.bot", headers=headers) #ENTRA NA ROTA AUTH.BOT PARA REALIZAR LOGIN
         res = str(response)[10:15]
 
-        if res == '[200]': #LIGIN EFETUADO
+        if res == '[200]': #LOGIN EFETUADO
 
             token = json.loads(response.content).get('token')
             bearer_token = f"Bearer {token}"
@@ -154,7 +156,6 @@ def getHora(idRecUser):
 def makeReservation(user):
     try:
         global token
-
         writeText(user, "status_acesso", "1")
 
         dicionario = dict()
@@ -179,12 +180,14 @@ def makeReservation(user):
                         "discente_id_discente": dicionario["discente_id_discente"],
                         "recurso_campus_id_recurso_campus":dicionario["recurso_campus_id_recurso_campus"]}
 
-        
-        print(json.dumps(dados_aluno))
+
+
         fData = json.dumps(dados_aluno)
-        header = {"content-Type: application/json", f"Authorization: Bearer {token}"}
-        print("Fiz o header")
-        resp =  requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=fData, headers=header)
+        header = {"content-Type": "application/json","Authorization": f"Bearer {token}"}
+        print(header)
+        resp =  requests.post(url=f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=fData, headers=header)
+        
+        print(resp.json())
         res = str(resp)[10:15]
         if res == "[201]":
             print("Tudo certo")

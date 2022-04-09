@@ -1,1 +1,0 @@
-cpf;030.511.072-12!usuario_id_usuario;136!nome;MARCOS VINICIUS DE CASTRO PRINTES!discente_id_discente;96!matricula;2019002845!recurso_campus_id_recurso_campus;26!hora_inicio;8:00:00!hora_fim;10:00:00!data;2022-04-09!para_si;1!fone;(93) 9-9238-6660!status_acesso;1!
