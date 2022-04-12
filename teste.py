@@ -265,7 +265,7 @@ else:
 
 
 
-
+"""
 dados_aluno = {
     'recurso_campus_id_recurso_campus' = 1,
     'data' =>  $newdata,
@@ -284,4 +284,14 @@ dados_aluno = {
         resp = requests.post(f"{rota_base}/solicitacoes_acessos/solicitacao_acesso", data=json.dumps(dados_aluno),headers=headers)
         print(resp)
         res = str(resp)[10:15]
-        print(res)
+        print(res)"""
+
+
+
+
+
+msg = str(input("O que deseja?")).lower().strip()
+if "/stop" in msg:
+    print("entendi", msg)
+else:
+    print("Não entendi")

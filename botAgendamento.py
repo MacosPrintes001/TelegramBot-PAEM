@@ -23,27 +23,34 @@ def start(message):
 
 @bot.message_handler(commands=['stop'])
 def stop(message):
+    print("Entrei stop")
     bot.reply_to(message, "Certo, quando quiser realizar uma solicitação basta me chamar que estarei aqui")
+    print("Mandei uma")
     bot.send_message(message.chat.id, "Serviço encerrado")
+    print("Mandei duas")
 
 
 
 def registrado(message):
     try:
+        msg = str(message.text).lower().strip()
         chat_id = message.chat.id
-        resp = int(message.text)
 
-        if resp == 1:
-            requestCPF(message)  #INICIO ATENDIMENTO
+        if "/stop" in msg:
+            return stop(message)
+            
+        else:
+            if int(msg) == 1:
+                requestCPF(message)  #INICIO ATENDIMENTO
 
-        elif resp == 2: #USUARIO NÃO POSSUI CADASTRO O SISTEMA
-            link = "http://www.minhavidaacademica.com.br/View/discente/cadastrar_disc.php"
-            bot.send_message(chat_id,
-                             f"Certo, vá no link abaixo, faça seu cadastro e depois volte aqui comigo.\n{link}")
+            elif int(msg) == 2: #USUARIO NÃO POSSUI CADASTRO O SISTEMA
+                link = "http://www.minhavidaacademica.com.br/View/discente/cadastrar_disc.php"
+                bot.send_message(chat_id,
+                                f"Certo, vá no link abaixo, faça seu cadastro e depois volte aqui comigo.\n{link}")
 
-        else: #USUARIO NÃO ENVIOU UMA OPÇÃO VALIDA
-            r = bot.send_message(chat_id, "Não entendi o que você disse. Você já possui cadastro?\n1 - Sim\n2 - Não")
-            bot.register_next_step_handler(r, registrado)
+            else: #USUARIO NÃO ENVIOU UMA OPÇÃO VALIDA
+                r = bot.send_message(chat_id, "Não entendi o que você disse. Você já possui cadastro?\n1 - Sim\n2 - Não")
+                bot.register_next_step_handler(r, registrado)
 
     except Exception: #USUARIO ENVIOU UM CARACTER NÃO RECONHECIDO
         r = bot.send_message(message.chat.id, "Responda com NÚMERO da sua opção.\n1 - Sim\n2 - Não")
@@ -63,32 +70,36 @@ def requestCPF(message): #SOLICITA O CPF DO USUARIO
 def doLogin(message):
     try:
         chat_id = message.chat.id
-        msg = str(message.text)
+        msg = str(message.text).strip().lower()
         user = str(message.from_user.id) #ID DE USUARIO DO TELEGRAM
-        cpf = f'{msg[:3]}.{msg[3:6]}.{msg[6:9]}-{msg[9:]}' #COLOCA OS PONTOS NO CPF
-        bot.send_message(chat_id, "Ok, só um segundo enquanto eu tento fazer seu login")
 
-        
-        resp, errorCode = cnt.login(cpf, user) #REALIZA LOGIN DO USUARIO PELA ROTA AUTH.BOT
-        if resp:
-
-            m = bot.send_message(chat_id, f"Tudo certo, login efetuado, agora vou precisar da sua matricula") #SOLICITANDO MATRICULA DO DISCENTE
-            bot.register_next_step_handler(m, searchUserData)
-
+        if "/stop" in msg:
+            return stop(message)
+            
         else:
-            if errorCode == 0:
-                m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie APENAS OS NUMEROS do seu cpf.")
-                bot.register_next_step_handler(m, doLogin)
+            cpf = f'{msg[:3]}.{msg[3:6]}.{msg[6:9]}-{msg[9:]}' #COLOCA OS PONTOS NO CPF
+            bot.send_message(chat_id, "Ok, só um segundo enquanto eu tento fazer seu login")
+            
+            resp, errorCode = cnt.login(cpf, user) #REALIZA LOGIN DO USUARIO PELA ROTA AUTH.BOT
+            if resp:
 
-            elif errorCode == 1:
-                link = "http://www.minhavidaacademica.com.br/View/discente/cadastrar_disc.php"
-                bot.send_message(chat_id,
-                                 f"Eu não achei esse cpf no servidor, caso não tenha uma conta ainda basta acessar o link abaixo e criar uma conta.\n{link}")
-                msg = bot.send_message(chat_id, "Caso você já possua uma conta, revise seus dados e mande novamente")
-                bot.register_next_step_handler(msg, doLogin)
+                m = bot.send_message(chat_id, f"Tudo certo, login efetuado, agora vou precisar da sua matricula") #SOLICITANDO MATRICULA DO DISCENTE
+                bot.register_next_step_handler(m, searchUserData)
+
             else:
-                msg = bot.send_message(chat_id, "Houve um erro desconhecido. Tente novamente")
-                bot.register_next_step_handler(msg, doLogin)
+                if errorCode == 0:
+                    m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie APENAS OS NUMEROS do seu cpf.")
+                    bot.register_next_step_handler(m, doLogin)
+
+                elif errorCode == 1:
+                    link = "http://www.minhavidaacademica.com.br/View/discente/cadastrar_disc.php"
+                    bot.send_message(chat_id,
+                                    f"Eu não achei esse cpf no servidor, caso não tenha uma conta ainda basta acessar o link abaixo e criar uma conta.\n{link}")
+                    msg = bot.send_message(chat_id, "Caso você já possua uma conta, revise seus dados e mande novamente")
+                    bot.register_next_step_handler(msg, doLogin)
+                else:
+                    msg = bot.send_message(chat_id, "Houve um erro desconhecido. Tente novamente")
+                    bot.register_next_step_handler(msg, doLogin)
 
     except Exception:
         bot.send_message(chat_id,
@@ -101,24 +112,29 @@ recursos = '' #RECEBE OS DADOS DO RECURSO QUE SERÁ ESCOLHIDO
 def searchUserData(message): #RECEBE MATRICULA DO DISCENTE
     global recursos
     try:
-        matricula = str(message.text)
+        matricula = str(message.text).lower().strip()
         chat_id = message.chat.id
         user = str(message.from_user.id)
-        resp, info, recursos_campus = cnt.dadosUsuario(matricula, user) #VERIRFICA A EXISTEENCIA DA MATRICULA NO SISTEMA E RETORNA UM MENU COM OS RECURSOS
 
-        if resp: #MATRICULA ACEITA
-            recursos = info #ATRIBUI A RECURSOS OS DADOS DO RECURSO PARA FAZER CONFIRMAÇÃO DA RESPOSTA DO USUSARIO
-            bot.send_message(chat_id, f"Matricula Valida. Qual recurso você gostaria de reservar?")
-            m = bot.send_message(chat_id, f"{recursos_campus}")
-            bot.register_next_step_handler(m, requestHour)
+
+        if "/stop" in matricula:
+            return stop(message)
+
         else:
-            if info == 3:
-                m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie sua matricula")
-                bot.register_next_step_handler(m, searchUserData)
+            resp, info, recursos_campus = cnt.dadosUsuario(matricula, user) #VERIRFICA A EXISTEENCIA DA MATRICULA NO SISTEMA E RETORNA UM MENU COM OS RECURSOS
+            if resp: #MATRICULA ACEITA
+                recursos = info #ATRIBUI A RECURSOS OS DADOS DO RECURSO PARA FAZER CONFIRMAÇÃO DA RESPOSTA DO USUSARIO
+                bot.send_message(chat_id, f"Matricula Valida. Qual recurso você gostaria de reservar?")
+                m = bot.send_message(chat_id, f"{recursos_campus}")
+                bot.register_next_step_handler(m, requestHour)
+            else:
+                if info == 3:
+                    m = bot.send_message(chat_id, "Erro no servidor, tente novamente. Envie sua matricula")
+                    bot.register_next_step_handler(m, searchUserData)
 
-            elif info == 2:
-                m = bot.send_message(chat_id, "Não achei essa matricula. Tente novamente")
-                bot.register_next_step_handler(m, searchUserData)
+                elif info == 2:
+                    m = bot.send_message(chat_id, "Não achei essa matricula. Tente novamente")
+                    bot.register_next_step_handler(m, searchUserData)
     except Exception:
         pass
 
@@ -277,7 +293,7 @@ def callReservation(message):
 def indef(message):
     chat_id = message.chat.id
     bot.send_message(chat_id,
-                     "Desculpe, não entendi o que disse, por favor clique em /start para iniciar o atendimento")
+                     "Desculpe, não entendi o que disse, por favor clique em /start para iniciar o atendimento ou /stop para sair")
 
 
 try:
