@@ -1,1 +1,1 @@
-cpf;030.511.072-12!usuario_id_usuario;136!
+cpf;030.511.072-12!usuario_id_usuario;136!nome;MARCOS VINICIUS DE CASTRO PRINTES!discente_id_discente;96!matricula;2019002845!
